@@ -42,7 +42,7 @@ export function Node({
 		<group ref={groupRef} position={localPos}>
 			<Box
 				onSelect={() => NodeHelper.selectedNode(nodeWithRef)}
-				selected={selected === nodeWithRef}
+				selected={selected?.id === nodeWithRef.id}
 				highlighted={
 					selected?.id !== current.id && (shouldHighlightAsParent || highlightedNode)
 				}
