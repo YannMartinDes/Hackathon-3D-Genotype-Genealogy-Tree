@@ -10,11 +10,21 @@ export const NODES: Node = {
 			children: [
 				{
 					id: "child-1-1",
-					children: [],
+					children: [
+						{
+							id: "child-1-1-1",
+							children: [],
+						},
+					],
 				},
 				{
 					id: "child-1-2",
-					children: [],
+					children: [
+						{
+							id: "child-1-2-1",
+							children: [],
+						},
+					],
 				},
 			],
 		},
@@ -26,6 +36,24 @@ export const NODES: Node = {
 					children: [
 						{
 							id: "child-2-1-1",
+							children: [],
+						},
+					],
+				},
+				{
+					id: "child-2-2",
+					children: [
+						{
+							id: "child-2-2-1",
+							children: [
+								{
+									id: "child-2-2-1-1",
+									children: [],
+								},
+							],
+						},
+						{
+							id: "child-2-2-2",
 							children: [],
 						},
 					],

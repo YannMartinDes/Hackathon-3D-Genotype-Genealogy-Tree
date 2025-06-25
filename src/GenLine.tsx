@@ -15,7 +15,7 @@ export function GenLine({
 }) {
 	const color = useMemo(() => {
 		if (highlighted) return "green";
-		if (highlightedParent) return "orange";
+		if (highlightedParent) return "blue";
 		return "white";
 	}, [highlighted, highlightedParent]);
 
