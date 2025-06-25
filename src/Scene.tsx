@@ -19,7 +19,7 @@ export function Scene() {
 			<ambientLight />
 			<pointLight position={[10, 10, 10]} />
 			<CameraControl target={target} />
-			<Node current={NODES} deep={0} />
+			<Node current={NODES} deep={0} sibling={0}/>
 		</>
 	);
 }

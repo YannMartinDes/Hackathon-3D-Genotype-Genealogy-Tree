@@ -1,6 +1,5 @@
 import { Vector3 } from "three";
 import { Box } from "./Box";
-import { useMemo } from "react";
 
 interface INode {
 	id: string;
@@ -9,17 +8,14 @@ interface INode {
 	children: INode[];
 }
 
-export function Node({ current, deep }: { current: INode; deep: number }) {
-	console.log(deep);
+export function Node({ current, deep, sibling }: { current: INode; deep: number, sibling:number }) {
 
-	const dsa = useMemo(() => deep + 1, []);
-	const ds = useMemo(() => new Vector3(deep, 0, 0), [deep]);
 
 	return (
-		<group position={ds}>
+		<group position={new Vector3(3,sibling*1.5,0)}>
 			<Box onSelect={() => {}} selected={true} />
-			{current.children.map((child: INode) => (
-				<Node current={child} deep={deep + 1} />
+			{current.children.map((child: INode, i) => (
+				<Node current={child} deep={deep + 1} sibling={i}/>
 			))}
 		</group>
 	);
