@@ -1,5 +1,5 @@
 import { CameraControl } from "./CameraControl";
-import { Node } from "./Node";
+import { Node, type INode } from "./Node";
 import { YearSphere } from "./YearSphere";
 import { NODES } from "./data";
 
@@ -14,7 +14,9 @@ export function Scene() {
 			{years.map((year, i) => (
 				<YearSphere year={year} gap={i} />
 			))}
-			<Node current={NODES} deep={0} sibling={0} parent={null} />
+			{[NODES].map((node: INode, i) => (
+				<Node key={node.id} current={node} deep={0} sibling={i} parent={null} />
+			))}
 		</>
 	);
 }
