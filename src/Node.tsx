@@ -4,6 +4,7 @@ import { useMemo, useRef } from "react";
 import { Group, Vector3, type Object3DEventMap } from "three";
 import { Box, currentNodeAtom, highlightNodeAtom, NodeHelper } from "./Box";
 import { GenLine } from "./GenLine";
+import { useFibonacciSpherePoints } from "./Scene";
 
 export interface INode {
 	id: string;
@@ -19,12 +20,14 @@ export function Node({
 	deep,
 	sibling,
 	highlightedNode,
+	pos = new Vector3(3, sibling * 1.5 * deep, 0),
 }: {
 	current: INode;
 	parent: INode | null;
 	highlightedNode?: boolean;
 	deep: number;
 	sibling: number;
+	pos?: Vector3;
 }) {
 	const groupRef = useRef<Group>(null);
 	const [selected] = useAtom(currentNodeAtom);
@@ -35,9 +38,14 @@ export function Node({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[current, groupRef.current]
 	);
-	const localPos = new Vector3(3, sibling * 1.5 * deep, 0);
+	const localPos = pos;
 	const shouldHighlightAsParent = NodeHelper.isMyChildHighlighted(current);
 
+	const basePos = useMemo(() => {
+		return groupRef.current?.getWorldPosition(new Vector3()) ?? new Vector3();
+	}, [groupRef.current]);
+
+	const points = useFibonacciSpherePoints(current.children.length, 20);
 	return (
 		<group ref={groupRef} position={localPos}>
 			<Box
@@ -72,6 +80,7 @@ export function Node({
 					sibling={i}
 					highlightedNode={highlightedNode || highlighted?.id === current.id}
 					parent={current}
+					pos={points[i]}
 				/>
 			))}
 		</group>
