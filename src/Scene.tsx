@@ -4,7 +4,7 @@ import { YearSphere } from "./YearSphere";
 import { NODES } from "./data";
 
 export function Scene() {
-	const years = [2000, 2001, 2002, 2003, 2004, 2005, 2006];
+	const years = [2000, 2001, 2002];
 
 	return (
 		<>

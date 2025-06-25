@@ -1,12 +1,19 @@
 import { Text } from "@react-three/drei";
 import { useRef } from "react";
 import { Group } from "three";
-import { HaloSphere } from "./shape/Billboard";
+import { Sphere } from "./shape/Sphere";
+import { useFrame, useThree } from "react-three-fiber";
 
 export function YearSphere({ year, gap }: { year: number; gap: number }) {
 	const ref = useRef<Group>(null);
 
-	const radius = gap * 10;
+	const radius = (1 + gap) * 20;
+	const { camera } = useThree();
+	useFrame(() => {
+		if (ref.current) {
+			ref.current.lookAt(camera.position); // Optional: orient to center
+		}
+	});
 
 	return (
 		<group ref={ref}>
@@ -19,7 +26,7 @@ export function YearSphere({ year, gap }: { year: number; gap: number }) {
 			>
 				{year}
 			</Text>
-			<HaloSphere radius={radius} />
+			<Sphere radius={radius} />
 		</group>
 	);
 }
