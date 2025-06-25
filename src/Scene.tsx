@@ -2,9 +2,10 @@ import { Vector3 } from "three";
 import { CameraControl } from "./CameraControl";
 import { Node, type INode } from "./Node";
 import { YearSphere } from "./YearSphere";
-import { NODES } from "./data";
+import hierarchyData from "./data/hierarchy.json";
 import { useMemo } from "react";
 
+export const DATA: INode[] = hierarchyData as unknown as INode[];
 export function useFibonacciSpherePoints(n: number, radius: number): Vector3[] {
 	return useMemo(() => {
 		const points: Vector3[] = [];
@@ -29,8 +30,8 @@ export function useFibonacciSpherePoints(n: number, radius: number): Vector3[] {
 
 export function Scene() {
 	const years = [2000, 2001, 2002];
-	const asd = [NODES];
-	const points = useFibonacciSpherePoints(asd.length, 20);
+	//const asd = [NODES];
+	//const points = useFibonacciSpherePoints(asd.length, 20);
 
 	return (
 		<>
@@ -40,15 +41,8 @@ export function Scene() {
 			{years.map((year, i) => (
 				<YearSphere key={year + i} year={year} gap={i} />
 			))}
-			{asd.map((node: INode, i) => (
-				<Node
-					key={node.id + "ds" + i}
-					current={node}
-					deep={0}
-					sibling={i}
-					parent={null}
-					pos={points[i]}
-				/>
+			{DATA.slice(0, 10).map((node: INode, i) => (
+				<Node key={node.id} current={node} deep={0} sibling={i} parent={null} />
 			))}
 		</>
 	);
