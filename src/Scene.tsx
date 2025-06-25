@@ -14,7 +14,7 @@ export function Scene() {
 			{years.map((year, i) => (
 				<YearSphere year={year} gap={i} />
 			))}
-			<Node current={NODES} deep={0} sibling={0} />
+			<Node current={NODES} deep={0} sibling={0} parent={null} />
 		</>
 	);
 }
