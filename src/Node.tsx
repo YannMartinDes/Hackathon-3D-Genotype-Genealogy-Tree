@@ -4,12 +4,10 @@ import { useMemo, useRef } from "react";
 import { Group, Vector3, type Object3DEventMap } from "three";
 import { Box, currentNodeAtom, highlightNodeAtom, NodeHelper } from "./Box";
 import { GenLine } from "./GenLine";
+import type { Node } from "./data";
 
-export interface INode {
-	id: string;
+export interface INode extends Node {
 	year?: number;
-	parent?: INode;
-	children: INode[];
 	ref?: Group<Object3DEventMap> | null;
 }
 
@@ -55,7 +53,7 @@ export function Node({
 				anchorX="center"
 				anchorY="bottom"
 			>
-				{current.id}
+				{current.genotype ?? current.id}
 			</Text>
 			{parent !== null && (
 				<GenLine

@@ -1,6 +1,8 @@
 export interface Node {
 	children: Node[];
 	id: string;
+	species?: string;
+	genotype?: string;
 }
 
 export const NODES: Node = {
