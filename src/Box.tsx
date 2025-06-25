@@ -1,5 +1,8 @@
+import { atom } from "jotai";
 import { useRef } from "react";
 import { Mesh } from "three";
+import type { INode } from "./Node";
+export const currentNodeAtom = atom<INode | null>(null);
 
 export function Box({ onSelect, selected }: { onSelect: () => void; selected: boolean }) {
 	const meshRef = useRef<Mesh>(null);

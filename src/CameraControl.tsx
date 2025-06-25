@@ -1,12 +1,15 @@
 import { OrbitControls } from "@react-three/drei";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useFrame, useThree } from "react-three-fiber";
-import { MOUSE, Vector3 } from "three";
+import { MOUSE } from "three";
+import { currentNodeAtom } from "./Box";
+import { useAtomValue } from "jotai";
 
-export function CameraControl({ target }: { target: Vector3 | null }) {
+export function CameraControl() {
 	const controls = useRef<any>(null);
 	const { camera } = useThree();
 	const [focusPressed, setFocusPressed] = useState(false);
+	const selected = useAtomValue(currentNodeAtom);
 
 	useEffect(() => {
 		if (controls.current) {
@@ -39,8 +42,9 @@ export function CameraControl({ target }: { target: Vector3 | null }) {
 	useCallback(() => {}, []);
 
 	useEffect(() => {
-		if (target && controls.current) {
+		if (focusPressed && selected && selected.ref && controls.current) {
 			// Smoothly interpolate the target position
+			const target = selected.ref.position;
 			controls.current.target.copy(target);
 			camera.lookAt(target);
 
@@ -53,7 +57,7 @@ export function CameraControl({ target }: { target: Vector3 | null }) {
 			camera.position.copy(newPos);
 			controls.current.update();
 		}
-	}, [focusPressed]);
+	}, [focusPressed, selected, controls]);
 
 	useFrame(() => {});
 
