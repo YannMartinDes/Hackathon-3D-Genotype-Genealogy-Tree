@@ -2,13 +2,7 @@ import { Text } from "@react-three/drei";
 import { useAtom } from "jotai";
 import { useMemo, useRef } from "react";
 import { Group, Vector3, type Object3DEventMap } from "three";
-import {
-	Box,
-	currentNodeAtom,
-	highlightNodeAtom,
-	NodeHelper,
-	parentOfSelectedNodeAtom,
-} from "./Box";
+import { Box, currentNodeAtom, highlightNodeAtom, NodeHelper } from "./Box";
 import { GenLine } from "./GenLine";
 
 export interface INode {
@@ -49,6 +43,9 @@ export function Node({
 			<Box
 				onSelect={() => NodeHelper.selectedNode(nodeWithRef)}
 				selected={selected === nodeWithRef}
+				highlighted={
+					selected?.id !== current.id && (shouldHighlightAsParent || highlightedNode)
+				}
 			/>
 
 			<Text

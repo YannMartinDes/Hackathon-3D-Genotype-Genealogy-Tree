@@ -39,13 +39,32 @@ export class NodeHelper {
 	}
 }
 
-export function Box({ onSelect, selected }: { onSelect: () => void; selected: boolean }) {
+export function Box({
+	onSelect,
+	selected,
+	highlighted,
+}: {
+	onSelect: () => void;
+	selected: boolean;
+	highlighted?: boolean;
+}) {
 	const meshRef = useRef<Mesh>(null);
 
 	return (
 		<mesh ref={meshRef} onClick={onSelect} scale={selected ? 1.2 : 1}>
 			<boxGeometry args={[1, 1, 1]} />
-			<meshStandardMaterial color={selected ? "hotpink" : "orange"} />
+			<meshStandardMaterial
+				color={selected ? "hotpink" : "orange"}
+				emissive={selected ? "hotpink" : "orange"}
+				emissiveIntensity={selected ? 0.5 : 0.2}
+			/>
+			{/* Glowy highlight layer */}
+			{highlighted && (
+				<mesh scale={1.15}>
+					<boxGeometry args={[1, 1, 1]} />
+					<meshBasicMaterial color="yellow" transparent opacity={0.5} />
+				</mesh>
+			)}
 		</mesh>
 	);
 }
