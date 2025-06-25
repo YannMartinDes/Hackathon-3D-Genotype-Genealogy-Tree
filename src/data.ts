@@ -1,7 +1,7 @@
 import { Vector3 } from "three";
 import DATA from "./data/formated.json";
 
-export interface INode {
+export interface IRawNode {
 	id: number;
 	species: string;
 	genotype: string;
@@ -10,13 +10,13 @@ export interface INode {
 	parent: number | null;
 }
 
-export interface INodeWithDisplay extends INode {
+export interface INode extends IRawNode {
 	coordinates: Vector3;
-	children: INodeWithDisplay[];
+	children: INode[];
 }
 
-export const NODES: INode[] = DATA as unknown as INode[];
-const computeCoordinates = (node: INode): Vector3 => {
+export const NODES: IRawNode[] = DATA as unknown as IRawNode[];
+const computeCoordinates = (node: IRawNode): Vector3 => {
 	const radius = 20 * (node.depth + 1);
 
 	const theta = Math.random() * 2 * Math.PI; // angle azimutal
@@ -28,15 +28,13 @@ const computeCoordinates = (node: INode): Vector3 => {
 
 	return new Vector3(x, y, z);
 };
-export const DataWithDisplay: INodeWithDisplay[] = NODES.map((elt) => ({
+export const DataWithDisplay: INode[] = NODES.map((elt) => ({
 	...elt,
 	coordinates: computeCoordinates(elt),
 	children: [],
 }));
 
-export const dataMap = new Map<number, INodeWithDisplay>(
-	DataWithDisplay.map((node) => [node.id, node])
-);
+export const dataMap = new Map<number, INode>(DataWithDisplay.map((node) => [node.id, node]));
 function computeChildren() {
 	DataWithDisplay.forEach((node) => {
 		if (node.parent) {

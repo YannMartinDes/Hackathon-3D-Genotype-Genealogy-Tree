@@ -1,62 +1,73 @@
 /* eslint-disable react-refresh/only-export-components */
 import { atom } from "jotai";
 import { store } from "./utils";
-import { dataMap, type INodeWithDisplay } from "./data";
+import { dataMap, type INode } from "./data";
 import { selectAtom } from "jotai/utils";
 
-export const currentNodeAtom = atom<INodeWithDisplay | null>(null);
-export const nodeAtom = atom<Map<string, { node: number; children: number; isChildren: boolean }>>(
-	(get) => {
-		const currentNode = get(currentNodeAtom);
-		return NodeHelper.computeGenealogyTree(currentNode as INodeWithDisplay);
-	}
-);
-export const linkTypeAtom = (idCrt: number, idChildren: number) =>
-	selectAtom(nodeAtom, (node) => {
+export type NodeLink = {
+	node: number;
+	children: number;
+	isChildren: boolean;
+	distance: number; // Optional distance property
+};
+export type LinkType = { type: "children" | "parent" | "none"; distance: number };
+
+export const currentNodeAtom = atom<INode | null>(null);
+export const nodeLinkAtom = atom<Map<string, NodeLink>>((get) => {
+	const currentNode = get(currentNodeAtom);
+	return NodeHelper.computeGenealogyTree(currentNode as INode);
+});
+export const linkTypeAtom = (idCrt: number | null, idChildren: number) =>
+	selectAtom(nodeLinkAtom, (node): LinkType => {
+		if (idCrt === null) return { type: "none", distance: -1 };
 		const isLinkToSelection = node.get(idCrt + ":" + idChildren);
-		if (!isLinkToSelection) return "none";
-		return isLinkToSelection.isChildren ? "children" : "parent";
+		if (!isLinkToSelection) return { type: "none", distance: -1 };
+
+		return isLinkToSelection.isChildren
+			? { type: "children", distance: isLinkToSelection.distance }
+			: { type: "parent", distance: isLinkToSelection.distance };
 	});
 
 export const isSelected = (id: number) =>
 	selectAtom(currentNodeAtom, (node): boolean => node?.id === id);
 
 export class NodeHelper {
-	static selectedNode(node: INodeWithDisplay | null) {
-		console.log("Selected node:", node);
+	static selectedNode(node: INode | null) {
 		store.set(currentNodeAtom, node);
 	}
 
-	static computeGenealogyTree(node: INodeWithDisplay | null) {
+	static computeGenealogyTree(node: INode | null) {
 		if (!node) {
-			return new Map<string, { node: number; children: number; isChildren: boolean }>();
+			return new Map<string, NodeLink>();
 		}
-		const genealogyTree: { node: number; children: number; isChildren: boolean }[] = [];
-		const computeParent = (currentNode: INodeWithDisplay) => {
+		const genealogyTree: NodeLink[] = [];
+		const computeParent = (currentNode: INode, distance: number) => {
 			if (currentNode.parent === null) return;
 			const parent = dataMap.get(currentNode.parent)!;
 			genealogyTree.push({
 				node: parent.id,
 				children: currentNode.id,
 				isChildren: false,
+				distance: distance,
 			});
-			computeParent(parent);
+			computeParent(parent, distance + 1);
 		};
-		computeParent(node);
+		computeParent(node, 1);
 
-		const computeChildren = (currentNode: INodeWithDisplay) => {
+		const computeChildren = (currentNode: INode, distance: number) => {
 			currentNode.children?.forEach((child) => {
 				genealogyTree.push({
 					node: currentNode.id,
 					children: child.id,
 					isChildren: true,
+					distance: distance,
 				});
-				computeChildren(child);
+				computeChildren(child, distance + 1);
 			});
 		};
-		computeChildren(node);
+		computeChildren(node, 0);
 
-		const map = new Map<string, { node: number; children: number; isChildren: boolean }>(
+		const map = new Map<string, NodeLink>(
 			genealogyTree.map((item) => [item.node + ":" + item.children, item])
 		);
 
