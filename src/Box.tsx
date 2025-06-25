@@ -1,23 +1,13 @@
 import { useRef } from "react";
-import type { Group } from "three";
+import { Mesh } from "three";
 
-export function Box({
-	position,
-	onSelect,
-	selected,
-}: {
-	position: [number, number, number];
-	onSelect: () => void;
-	selected: boolean;
-}) {
-	const meshRef = useRef<Group>(null);
+export function Box({ onSelect, selected }: { onSelect: () => void; selected: boolean }) {
+	const meshRef = useRef<Mesh>(null);
 
 	return (
-		<group ref={meshRef} position={[0, 0, 0]} name="parent-node">
-			<mesh position={position} onClick={onSelect} scale={selected ? 1.2 : 1}>
-				<boxGeometry args={[1, 1, 1]} />
-				<meshStandardMaterial color={selected ? "hotpink" : "orange"} />
-			</mesh>
-		</group>
+		<mesh ref={meshRef} onClick={onSelect} scale={selected ? 1.2 : 1}>
+			<boxGeometry args={[1, 1, 1]} />
+			<meshStandardMaterial color={selected ? "hotpink" : "orange"} />
+		</mesh>
 	);
 }
