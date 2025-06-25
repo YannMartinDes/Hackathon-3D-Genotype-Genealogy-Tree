@@ -1,8 +1,9 @@
-import { Group, Vector3, type Object3DEventMap } from "three";
-import { Box, currentNodeAtom } from "./Box";
-import { useMemo, useRef } from "react";
-import { useAtom } from "jotai";
 import { Text } from "@react-three/drei";
+import { useAtom } from "jotai";
+import { useMemo, useRef } from "react";
+import { Group, Vector3, type Object3DEventMap } from "three";
+import { Box, currentNodeAtom, highlightNodeAtom } from "./Box";
+import { GenLine } from "./GenLine";
 
 export interface INode {
 	id: string;
@@ -16,24 +17,34 @@ export function Node({
 	current,
 	deep,
 	sibling,
+	highlightedNode,
 }: {
 	current: INode;
+	highlightedNode?: boolean;
 	deep: number;
 	sibling: number;
 }) {
-	const ref = useRef<Group>(null);
+	const groupRef = useRef<Group>(null);
 	const [selected, setNode] = useAtom(currentNodeAtom);
+	const [highlighted, setHighlighted] = useAtom(highlightNodeAtom);
 
-	const asd = useMemo(() => ({ ...current, ref: ref.current }), [current, ref.current]);
+	const nodeWithRef = useMemo(
+		() => ({ ...current, ref: groupRef.current }),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[current, groupRef.current]
+	);
+	const localPos = new Vector3(3, sibling * 1.5 * deep, 0);
 
 	return (
-		<group ref={ref} position={new Vector3(deep !== 0 ? 2 : 0, sibling * 1.5 * deep, 0)}>
+		<group ref={groupRef} position={localPos}>
 			<Box
 				onSelect={() => {
-					setNode(asd);
+					setNode(nodeWithRef);
+					setHighlighted(nodeWithRef);
 				}}
-				selected={selected === asd}
+				selected={selected === nodeWithRef}
 			/>
+
 			<Text
 				position={[0, 1, 1]}
 				fontSize={0.3}
@@ -43,8 +54,20 @@ export function Node({
 			>
 				{current.id}
 			</Text>
+			{deep !== 0 && (
+				<GenLine
+					start={new Vector3()}
+					end={localPos.clone().multiplyScalar(-1)}
+					highlighted={highlightedNode}
+				/>
+			)}
 			{current.children.map((child: INode, i) => (
-				<Node current={child} deep={deep + 1} sibling={i} />
+				<Node
+					current={child}
+					deep={deep + 1}
+					sibling={i}
+					highlightedNode={highlightedNode || highlighted?.id === current.id}
+				/>
 			))}
 		</group>
 	);
