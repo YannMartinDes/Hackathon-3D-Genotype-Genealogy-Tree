@@ -28,6 +28,20 @@ export function Sphere({ radius }: { radius: number }) {
 	const meshRef = useRef<Mesh>(null);
 	const materialRef = useRef<ShaderMaterial>(null);
 
+	const { camera } = useThree();
+
+	useFrame(() => {
+		if (materialRef.current) {
+			// camera.getWorldDirection gives the current forward vector
+			const cameraDirection = camera.position
+				.clone()
+				.normalize()
+				.add(new Vector3(0, 0, 1));
+
+			materialRef.current.uniforms.cameraDirection.value.copy(cameraDirection);
+		}
+	});
+
 	return (
 		<mesh ref={meshRef}>
 			<sphereGeometry args={[radius, 100, 100]} />
@@ -36,6 +50,9 @@ export function Sphere({ radius }: { radius: number }) {
 				vertexShader={vertexShader}
 				fragmentShader={fragmentShader}
 				transparent
+				uniforms={{
+					cameraDirection: { value: new Vector3() }, // default
+				}}
 			/>
 		</mesh>
 	);

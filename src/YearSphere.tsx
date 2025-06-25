@@ -11,7 +11,7 @@ export function YearSphere({ year, gap }: { year: number; gap: number }) {
 	const { camera } = useThree();
 	useFrame(() => {
 		if (ref.current) {
-			ref.current.lookAt(camera.position); // Optional: orient to center
+			//	ref.current.lookAt(camera.position); // Optional: orient to center
 		}
 	});
 
