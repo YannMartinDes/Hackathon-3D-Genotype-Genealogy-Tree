@@ -17,6 +17,14 @@ export const nodeLinkAtom = atom<Map<string, NodeLink>>((get) => {
 	const currentNode = get(currentNodeAtom);
 	return NodeHelper.computeGenealogyTree(currentNode as INode);
 });
+
+export const amIInSelectedFamily = (id: number) =>
+	selectAtom(nodeLinkAtom, (node): boolean => {
+		if (!node) return false;
+		const links = Array.from(node.values());
+		return links.some((link) => link.node === id || link.children === id);
+	});
+
 export const linkTypeAtom = (idCrt: number | null, idChildren: number) =>
 	selectAtom(nodeLinkAtom, (node): LinkType => {
 		if (idCrt === null) return { type: "none", distance: -1 };

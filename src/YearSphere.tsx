@@ -18,8 +18,8 @@ export function YearSphere({ year, gap }: { year: number; gap: number }) {
 		<group ref={ref}>
 			<Text
 				position={[0, radius, 0]}
-				fontSize={1.5}
-				color="white"
+				fontSize={2}
+				color="black"
 				anchorX="center"
 				anchorY="bottom"
 			>

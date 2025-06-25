@@ -50,6 +50,7 @@ export function Sphere({ radius }: { radius: number }) {
 				vertexShader={vertexShader}
 				fragmentShader={fragmentShader}
 				transparent
+				depthWrite={false} // 👈 pour voir les objets derrière
 				uniforms={{
 					cameraDirection: { value: new Vector3() }, // default
 				}}

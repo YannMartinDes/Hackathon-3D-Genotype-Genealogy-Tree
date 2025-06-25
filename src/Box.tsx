@@ -13,7 +13,7 @@ export function Box({
 	highlighted?: boolean;
 }) {
 	return (
-		<mesh onClick={onSelect} scale={selected ? 1.2 : 1} position={position}>
+		<mesh onClick={onSelect} scale={selected || highlighted ? 1.5 : 1} position={position}>
 			<boxGeometry args={[1, 1, 1]} />
 			<meshStandardMaterial
 				color={selected ? "hotpink" : "orange"}
@@ -22,9 +22,9 @@ export function Box({
 			/>
 			{/* Glowy highlight layer */}
 			{highlighted && (
-				<mesh scale={1.15}>
+				<mesh scale={1.3}>
 					<boxGeometry args={[1, 1, 1]} />
-					<meshBasicMaterial color="yellow" transparent opacity={0.5} />
+					<meshBasicMaterial color="yellow" transparent opacity={0.8} />
 				</mesh>
 			)}
 		</mesh>
