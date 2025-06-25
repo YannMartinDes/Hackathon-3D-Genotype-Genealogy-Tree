@@ -1,6 +1,6 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { useRef } from "react";
-import { AdditiveBlending, Color, Mesh, ShaderMaterial } from "three";
+import { AdditiveBlending, Mesh, ShaderMaterial } from "three";
 
 const fragmentShader = `
   varying vec2 vUv;

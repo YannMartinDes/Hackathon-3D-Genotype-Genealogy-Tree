@@ -1,40 +1,61 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+type RawItem = {
+	"Data identifier (DATA_ID)": number;
+	"Genotype name (C0001)": string;
+	"Species (C0002)": string;
+	"Female data ID (FEMALE_DATA_ID)": number | "" | null;
+	"Registration year (C0159)": number;
+};
 
-export function buildHierarchy(data: any) {
-	// Step 1: Create a map of all nodes by DATA_ID
-	const nodeMap = new Map();
+type TransformedItem = {
+	id: number;
+	species: string;
+	genotype: string;
+	year: number;
+	depth: number;
+	parent: number | null;
+};
 
-	// Step 2: Create nodes with children arrays
-	data.forEach((item: any) => {
-		const id = String(item["Data identifier (DATA_ID)"]);
-		nodeMap.set(id, {
-			id,
+export function transformDataset(rawData: RawItem[]): TransformedItem[] {
+	const dataById = new Map<number, RawItem>();
+	const depthCache = new Map<number, number>();
+
+	// Indexer les données pour lookup rapide
+	rawData.forEach((item) => {
+		dataById.set(item["Data identifier (DATA_ID)"], item);
+	});
+
+	function calculateDepth(item: RawItem): number {
+		const id = item["Data identifier (DATA_ID)"];
+		if (depthCache.has(id)) {
+			return depthCache.get(id)!;
+		}
+
+		const parentId = item["Female data ID (FEMALE_DATA_ID)"];
+		if (typeof parentId !== "number" || !dataById.has(parentId)) {
+			depthCache.set(id, 0);
+			return 0;
+		}
+
+		const parentItem = dataById.get(parentId)!;
+		const depth = calculateDepth(parentItem) + 1;
+		depthCache.set(id, depth);
+		return depth;
+	}
+
+	// Mapper vers le format transformé
+	const transformed: TransformedItem[] = rawData.map((item) => {
+		return {
+			id: item["Data identifier (DATA_ID)"],
 			species: item["Species (C0002)"],
 			genotype: item["Genotype name (C0001)"],
 			year: item["Registration year (C0159)"],
-			children: [],
-		});
+			depth: calculateDepth(item),
+			parent:
+				typeof item["Female data ID (FEMALE_DATA_ID)"] === "number"
+					? item["Female data ID (FEMALE_DATA_ID)"]
+					: null,
+		};
 	});
 
-	const roots: any[] = [];
-
-	// Step 3: Link children to their parents based on "Direct F parent"
-	data.forEach((item: any) => {
-		const id = String(item["Data identifier (DATA_ID)"]);
-		const parentId = item["Female data ID (FEMALE_DATA_ID)"]?.toString();
-
-		if (parentId && nodeMap.has(parentId)) {
-			nodeMap.get(parentId).children.push(nodeMap.get(id));
-		} else {
-			// If no parent or parent not found, it's a root node
-			roots.push(nodeMap.get(id));
-		}
-	});
-
-	return [
-		{
-			id: "root",
-			children: roots,
-		},
-	];
+	return transformed;
 }

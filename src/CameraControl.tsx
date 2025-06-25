@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { OrbitControls } from "@react-three/drei";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useFrame, useThree } from "react-three-fiber";
 import { MOUSE } from "three";
-import { currentNodeAtom } from "./Box";
 import { useAtomValue } from "jotai";
+import { currentNodeAtom } from "./Atom";
 
 export function CameraControl() {
 	const controls = useRef<any>(null);
@@ -42,9 +43,9 @@ export function CameraControl() {
 	useCallback(() => {}, []);
 
 	useEffect(() => {
-		if (focusPressed && selected && selected.ref && controls.current) {
+		if (focusPressed && selected && (selected as any).ref && controls.current) {
 			// Smoothly interpolate the target position
-			const target = selected.ref.position;
+			const target = (selected as any).ref.position;
 			controls.current.target.copy(target);
 			camera.lookAt(target);
 
