@@ -1,8 +1,9 @@
+import { Text } from "@react-three/drei";
+import { useAtom } from "jotai";
+import { useMemo, useRef } from "react";
 import { Group, Vector3, type Object3DEventMap } from "three";
 import { Box, currentNodeAtom } from "./Box";
-import { useMemo, useRef } from "react";
-import { useAtom } from "jotai";
-import { Text } from "@react-three/drei";
+import { GenLine } from "./GenLine";
 
 export interface INode {
 	id: string;
@@ -29,15 +30,17 @@ export function Node({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[current, groupRef.current]
 	);
+	const localPos = new Vector3(3 * deep, sibling * 1.5 * deep, 0);
 
 	return (
-		<group ref={groupRef} position={new Vector3(3, sibling * 1.5 * deep, 0)}>
+		<group ref={groupRef} position={localPos}>
 			<Box
 				onSelect={() => {
 					setNode(nodeWithRef);
 				}}
 				selected={selected === nodeWithRef}
 			/>
+
 			<Text
 				position={[0, 1, 1]}
 				fontSize={0.3}
@@ -47,6 +50,7 @@ export function Node({
 			>
 				{current.id}
 			</Text>
+			<GenLine start={new Vector3()} end={localPos.clone().multiplyScalar(-1)} />
 			{current.children.map((child: INode, i) => (
 				<Node current={child} deep={deep + 1} sibling={i} />
 			))}
