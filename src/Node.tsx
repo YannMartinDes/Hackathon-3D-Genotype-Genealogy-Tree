@@ -2,7 +2,7 @@ import { Text } from "@react-three/drei";
 import { useAtom } from "jotai";
 import { useMemo, useRef } from "react";
 import { Group, Vector3, type Object3DEventMap } from "three";
-import { Box, currentNodeAtom } from "./Box";
+import { Box, currentNodeAtom, highlightNodeAtom } from "./Box";
 import { GenLine } from "./GenLine";
 
 export interface INode {
@@ -17,26 +17,30 @@ export function Node({
 	current,
 	deep,
 	sibling,
+	highlightedNode,
 }: {
 	current: INode;
+	highlightedNode?: boolean;
 	deep: number;
 	sibling: number;
 }) {
 	const groupRef = useRef<Group>(null);
 	const [selected, setNode] = useAtom(currentNodeAtom);
+	const [highlighted, setHighlighted] = useAtom(highlightNodeAtom);
 
 	const nodeWithRef = useMemo(
 		() => ({ ...current, ref: groupRef.current }),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[current, groupRef.current]
 	);
-	const localPos = new Vector3(3 * deep, sibling * 1.5 * deep, 0);
+	const localPos = new Vector3(3, sibling * 1.5 * deep, 0);
 
 	return (
 		<group ref={groupRef} position={localPos}>
 			<Box
 				onSelect={() => {
 					setNode(nodeWithRef);
+					setHighlighted(nodeWithRef);
 				}}
 				selected={selected === nodeWithRef}
 			/>
@@ -50,9 +54,20 @@ export function Node({
 			>
 				{current.id}
 			</Text>
-			<GenLine start={new Vector3()} end={localPos.clone().multiplyScalar(-1)} />
+			{deep !== 0 && (
+				<GenLine
+					start={new Vector3()}
+					end={localPos.clone().multiplyScalar(-1)}
+					highlighted={highlightedNode}
+				/>
+			)}
 			{current.children.map((child: INode, i) => (
-				<Node current={child} deep={deep + 1} sibling={i} />
+				<Node
+					current={child}
+					deep={deep + 1}
+					sibling={i}
+					highlightedNode={highlightedNode || highlighted?.id === current.id}
+				/>
 			))}
 		</group>
 	);

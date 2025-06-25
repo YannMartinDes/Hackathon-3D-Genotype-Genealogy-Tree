@@ -1,12 +1,20 @@
 import * as THREE from "three";
 import { Line } from "@react-three/drei";
 
-export function GenLine({ start, end }: { start: THREE.Vector3; end: THREE.Vector3 }) {
+export function GenLine({
+	start,
+	end,
+	highlighted,
+}: {
+	start: THREE.Vector3;
+	end: THREE.Vector3;
+	highlighted?: boolean;
+}) {
 	return (
 		<Line
 			points={[start.toArray(), end.toArray()]}
-			color="white"
-			lineWidth={1}
+			color={highlighted ? "green" : "white"}
+			lineWidth={highlighted ? 4 : 1}
 			dashed={false}
 		/>
 	);
