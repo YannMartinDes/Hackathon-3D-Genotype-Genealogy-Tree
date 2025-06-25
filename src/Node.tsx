@@ -24,6 +24,7 @@ export function Node({ node }: { node: INode }) {
 				onSelect={() => NodeHelper.selectedNode(node)}
 				selected={selected}
 				highlighted={amIInFamily && !selected}
+				layer={node.depth}
 			/>
 			{node.children.map((child, index) => (
 				<NodeLine node={node} child={child} key={index} />
