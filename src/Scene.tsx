@@ -16,7 +16,7 @@ export function Scene() {
 			{years.map((year, i) => (
 				<YearSphere year={year} gap={i} />
 			))}
-			{DATA.map((node: INode, i) => (
+			{DATA.slice(0, 10).map((node: INode, i) => (
 				<Node key={node.id} current={node} deep={0} sibling={i} parent={null} />
 			))}
 		</>
