@@ -21,18 +21,22 @@ export function Node({
 	deep: number;
 	sibling: number;
 }) {
-	const ref = useRef<Group>(null);
+	const groupRef = useRef<Group>(null);
 	const [selected, setNode] = useAtom(currentNodeAtom);
 
-	const asd = useMemo(() => ({ ...current, ref: ref.current }), [current, ref.current]);
+	const nodeWithRef = useMemo(
+		() => ({ ...current, ref: groupRef.current }),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[current, groupRef.current]
+	);
 
 	return (
-		<group ref={ref} position={new Vector3(3, sibling * 1.5 * deep, 0)}>
+		<group ref={groupRef} position={new Vector3(3, sibling * 1.5 * deep, 0)}>
 			<Box
 				onSelect={() => {
-					setNode(asd);
+					setNode(nodeWithRef);
 				}}
-				selected={selected === asd}
+				selected={selected === nodeWithRef}
 			/>
 			<Text
 				position={[0, 1, 1]}
