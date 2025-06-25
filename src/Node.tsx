@@ -27,7 +27,7 @@ export function Node({
 	const asd = useMemo(() => ({ ...current, ref: ref.current }), [current, ref.current]);
 
 	return (
-		<group ref={ref} position={new Vector3(3, sibling * 1.5 * deep, 0)}>
+		<group ref={ref} position={new Vector3(deep !== 0 ? 2 : 0, sibling * 1.5 * deep, 0)}>
 			<Box
 				onSelect={() => {
 					setNode(asd);
