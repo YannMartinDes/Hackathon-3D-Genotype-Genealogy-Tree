@@ -8,18 +8,19 @@ interface INode {
 	parent?: INode;
 	children: INode[];
 }
+interface ddd {
+	current: INode;
+	deep: number;
+}
 
-export function Node({ current, deep }: { current: INode; deep: number }) {
-	console.log(deep);
-
-	const dsa = useMemo(() => deep + 1, []);
-	const ds = useMemo(() => new Vector3(deep, 0, 0), [deep]);
+export function Node({ current, deep }: ddd) {
+	const childDeep = useMemo(() => deep + 1, []);
 
 	return (
-		<group position={ds}>
+		<group position={new Vector3(2, 0, 0)}>
 			<Box onSelect={() => {}} selected={true} />
-			{current.children.map((child: INode) => (
-				<Node current={child} deep={deep + 1} />
+			{current.children.map((child: INode, i) => (
+				<Node current={child} deep={childDeep} />
 			))}
 		</group>
 	);
