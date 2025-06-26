@@ -10,8 +10,9 @@ import {
 	search,
 	showYear,
 } from "./atom";
-import { useState } from "react";
-import { dataMap } from "./data";
+import { useCallback, useEffect, useState } from "react";
+import { dataMap, DataWithDisplay } from "./data";
+import { store } from "./utils";
 
 const buttonStyle = {
 	padding: "10px 20px",
@@ -195,6 +196,21 @@ function SearchComponent() {
 	const [, setSearch] = useAtom(search);
 	const [filtered] = useAtom(filteredDataAtom);
 
+	const onSearch = useCallback(() => {
+		const a = store.get(filteredDataAtom);
+		if (a.length > 0) {
+			NodeHelper.selectedNode(a[0]);
+			wait(200).then(() => {
+				window.dispatchEvent(
+					new KeyboardEvent("keydown", {
+						key: "f",
+						bubbles: true,
+					})
+				);
+			});
+		}
+	}, [filteredDataAtom]);
+
 	return (
 		<InfoWindow left={20}>
 			<div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
@@ -226,6 +242,7 @@ function SearchComponent() {
 						}}
 						onClick={async () => {
 							setSearch(inputValue);
+							onSearch();
 						}}
 					>
 						Search

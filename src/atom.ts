@@ -61,12 +61,12 @@ export const filteredDataAtom = atom<INode[]>((get) => {
 
 	return data.filter((node) => {
 		const genotype = node.genotype?.toLowerCase() || "";
-		const species = node.species?.toLowerCase() || "";
+		//const species = node.species?.toLowerCase() || "";
 		const searchLower = searchValue.toLowerCase();
 
 		return (
 			genotype.includes(searchLower) ||
-			species.includes(searchLower) ||
+			//	species.includes(searchLower) ||
 			myFamily.some((familyNode) => familyNode.id === node.id)
 		);
 	});
