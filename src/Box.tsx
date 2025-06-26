@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import type { Mesh, Vector3 } from "three";
+import type { Vector3 } from "three";
 
 const layerColors = [
 	"#FF8C94", // soft red

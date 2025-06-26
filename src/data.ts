@@ -1,4 +1,4 @@
-import { Mesh, Vector3 } from "three";
+import { Vector3 } from "three";
 import DATA from "./data/formated.json";
 
 export interface IRawNode {
@@ -19,6 +19,8 @@ export const nodesYears: Record<number, INode[]> = {};
 export interface INode extends IRawNode {
 	position: Vector3;
 	children: INode[];
+	childrenM: INode[];
+	childrenF: INode[];
 	parentNode?: INode;
 }
 
@@ -90,6 +92,8 @@ export const DataWithDisplay: INode[] = NODES.map((elt) => {
 		...elt,
 		position: new Vector3(),
 		children: [],
+		childrenF: [],
+		childrenM: [],
 	};
 
 	if (!nodesYears[elt.year]) {
@@ -106,12 +110,22 @@ function computeChildren() {
 	DataWithDisplay.forEach((node) => {
 		if (node.parent) {
 			const pNode = dataMap.get(node.parent);
-			pNode?.children.push(node);
-			node.parentNode = pNode;
+			if (pNode) {
+				if (!pNode.children.some((child) => child.id === node.id)) {
+					pNode.children.push(node);
+				}
+				pNode.childrenF.push(node);
+				node.parentNode = pNode;
+			}
 		}
 		if (node.male) {
 			const mNode = dataMap.get(node.male);
-			mNode?.children.push(node);
+			if (mNode) {
+				if (!mNode.children.some((child) => child.id === node.id)) {
+					mNode.children.push(node);
+				}
+				mNode?.childrenM.push(node);
+			}
 		}
 	});
 }

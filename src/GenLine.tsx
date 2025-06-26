@@ -84,6 +84,8 @@ export function GenLine({ start, end, link }: { start: Vector3; end: Vector3; li
 		// Couleur de base selon le type
 		let baseColor = "white";
 		if (link.type === "children") {
+			baseColor = "purple";
+		} else if (link.type === "childrenM") {
 			baseColor = "darkgreen";
 		} else if (link.type === "parent") {
 			baseColor = "#FF007F";

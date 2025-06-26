@@ -29,6 +29,13 @@ const buttonStyle = {
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+const legendItems = [
+	{ label: "Children (Female)", color: "purple" },
+	{ label: "Children (Male)", color: "darkgreen" },
+	{ label: "Parent (Female)", color: "#FF007F" },
+	{ label: "Parent (Male)", color: "blue" },
+];
+
 function App() {
 	const selected = useAtomValue(currentNodeAtom);
 	const [focusFamily, setFocusFamily] = useAtom(isFocusOnGenealogy);
@@ -41,6 +48,32 @@ function App() {
 			{/* UI elements */}
 			<SearchComponent />
 			<YearSelector />
+			<InfoWindow left={20} top={700}>
+				<div
+					style={{
+						display: "flex",
+						gap: "1rem",
+						flexDirection: "column",
+						padding: "0.5rem",
+					}}
+				>
+					{legendItems.map((item) => (
+						<div key={item.label} style={{ display: "flex", alignItems: "center" }}>
+							<div
+								style={{
+									width: 16,
+									height: 16,
+									backgroundColor: item.color,
+									marginRight: 8,
+									borderRadius: 4,
+									border: "1px solid #333",
+								}}
+							/>
+							<span style={{ fontSize: "0.9rem" }}>{item.label}</span>
+						</div>
+					))}
+				</div>
+			</InfoWindow>
 			{selected !== null ? (
 				<>
 					<InfoWindow width={300}>
@@ -84,57 +117,23 @@ function App() {
 							</button>
 						</div>
 					</InfoWindow>
-					<InfoWindow top={350} width={300}>
-						{selected.parent && (
+					<InfoWindow top={350} width={400}>
+						{(selected.parent || selected.male) && (
 							<>
 								<p>Parents</p>
-								<button
-									style={{
-										...buttonStyle,
-										background:
-											"linear-gradient(135deg,rgb(29, 119, 41) 0%,rgb(0, 255, 21) 100%)",
-									}}
-									onMouseOver={(e) => {
-										e.currentTarget.style.transform = "scale(1.1)";
-									}}
-									onMouseOut={(e) => {
-										e.currentTarget.style.transform = "scale(1)";
-									}}
-									onClick={async () => {
-										NodeHelper.selectedNode(dataMap.get(selected.parent!)!);
-										await wait(200); // wait 1s
-										window.dispatchEvent(
-											new KeyboardEvent("keydown", {
-												key: "f",
-												bubbles: true,
-											})
-										);
-									}}
-								>
-									{dataMap.get(selected.parent)!.genotype ?? "Unselect"}
-								</button>
-							</>
-						)}
-						{selected.children.length > 0 && (
-							<>
-								<p>Children</p>
 								<div
 									style={{
-										padding: "5px 15px",
 										display: "flex",
-										flexDirection: "column",
-										gap: "5px",
-										overflowY: "auto",
-										maxHeight: "250px",
+										flexDirection: "row",
+										gap: "1rem",
 									}}
 								>
-									{selected.children.map((child) => (
+									{selected.parent && (
 										<button
-											key={child.id}
 											style={{
 												...buttonStyle,
 												background:
-													"linear-gradient(135deg,rgb(29, 119, 41) 0%,rgb(0, 255, 21) 100%)",
+													"linear-gradient(135deg,rgb(214, 65, 219) 0%,rgb(236, 164, 233)100%)",
 											}}
 											onMouseOver={(e) => {
 												e.currentTarget.style.transform = "scale(1.1)";
@@ -143,7 +142,9 @@ function App() {
 												e.currentTarget.style.transform = "scale(1)";
 											}}
 											onClick={async () => {
-												NodeHelper.selectedNode(child);
+												NodeHelper.selectedNode(
+													dataMap.get(selected.parent!)!
+												);
 												await wait(200); // wait 1s
 												window.dispatchEvent(
 													new KeyboardEvent("keydown", {
@@ -153,12 +154,149 @@ function App() {
 												);
 											}}
 										>
-											{child.genotype}
+											{dataMap.get(selected.parent)!.genotype ?? "Unselect"}
 										</button>
-									))}
+									)}
+									{selected.male && (
+										<button
+											style={{
+												...buttonStyle,
+												background:
+													"linear-gradient(135deg,rgb(46, 12, 172) 0%,rgb(4, 194, 241) 100%)",
+											}}
+											onMouseOver={(e) => {
+												e.currentTarget.style.transform = "scale(1.1)";
+											}}
+											onMouseOut={(e) => {
+												e.currentTarget.style.transform = "scale(1)";
+											}}
+											onClick={async () => {
+												NodeHelper.selectedNode(
+													dataMap.get(selected.male!)!
+												);
+												await wait(200); // wait 1s
+												window.dispatchEvent(
+													new KeyboardEvent("keydown", {
+														key: "f",
+														bubbles: true,
+													})
+												);
+											}}
+										>
+											{dataMap.get(selected.male)!.genotype ?? "Unselect"}
+										</button>
+									)}
 								</div>
 							</>
 						)}
+						<div
+							style={{
+								display: "flex",
+								flexDirection: "row",
+								gap: "1rem",
+							}}
+						>
+							{selected.childrenF.length > 0 && (
+								<div
+									style={{
+										display: "flex",
+										flexDirection: "column",
+										gap: "1rem",
+									}}
+								>
+									<p>Children (Female)</p>
+									<div
+										style={{
+											padding: "5px 15px",
+											display: "flex",
+											flexDirection: "column",
+											gap: "5px",
+											overflowY: "auto",
+											maxHeight: "250px",
+										}}
+									>
+										{selected.childrenF.map((child) => (
+											<button
+												key={child.id}
+												style={{
+													...buttonStyle,
+													background:
+														"linear-gradient(135deg,rgb(29, 119, 41) 0%,rgb(0, 255, 21) 100%)",
+												}}
+												onMouseOver={(e) => {
+													e.currentTarget.style.transform = "scale(1.1)";
+												}}
+												onMouseOut={(e) => {
+													e.currentTarget.style.transform = "scale(1)";
+												}}
+												onClick={async () => {
+													NodeHelper.selectedNode(child);
+													await wait(200); // wait 1s
+													window.dispatchEvent(
+														new KeyboardEvent("keydown", {
+															key: "f",
+															bubbles: true,
+														})
+													);
+												}}
+											>
+												{child.genotype}
+											</button>
+										))}
+									</div>
+								</div>
+							)}
+							{selected.childrenM.length > 0 && (
+								<div
+									style={{
+										display: "flex",
+										flexDirection: "column",
+										gap: "1rem",
+									}}
+								>
+									<p>Children (Male)</p>
+									<div
+										style={{
+											padding: "5px 15px",
+											display: "flex",
+											flexDirection: "column",
+											gap: "5px",
+											overflowY: "auto",
+											maxHeight: "250px",
+										}}
+									>
+										{selected.childrenM.map((child) => (
+											<button
+												key={child.id}
+												style={{
+													...buttonStyle,
+													background:
+														"linear-gradient(135deg,rgb(29, 119, 41) 0%,rgb(0, 255, 21) 100%)",
+												}}
+												onMouseOver={(e) => {
+													e.currentTarget.style.transform = "scale(1.1)";
+												}}
+												onMouseOut={(e) => {
+													e.currentTarget.style.transform = "scale(1)";
+												}}
+												onClick={async () => {
+													NodeHelper.selectedNode(child);
+													await wait(200); // wait 1s
+													window.dispatchEvent(
+														new KeyboardEvent("keydown", {
+															key: "f",
+															bubbles: true,
+														})
+													);
+												}}
+											>
+												{child.genotype}
+											</button>
+										))}
+									</div>
+								</div>
+							)}
+						</div>
 					</InfoWindow>
 				</>
 			) : (
