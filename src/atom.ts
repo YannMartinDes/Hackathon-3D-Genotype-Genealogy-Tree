@@ -43,6 +43,7 @@ export const isSelected = (id: number) =>
 	selectAtom(currentNodeAtom, (node): boolean => node?.id === id);
 
 export const isFocusOnGenealogy = atom<boolean>(false);
+export const showYear = atom<boolean>(true);
 
 export const myFamilyAtom = selectAtom(nodeLinkAtom, (nodeLinkMap): INode[] => {
 	if (!nodeLinkMap) return [];

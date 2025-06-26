@@ -8,6 +8,11 @@ export interface IRawNode {
 	year: number;
 	depth: number;
 	parent: number | null;
+	male: number | null;
+	type: string;
+	generation: string;
+	name: string;
+	trialName: string;
 }
 
 export const nodesYears: Record<number, INode[]> = {};

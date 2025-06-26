@@ -2,7 +2,7 @@ import { Canvas } from "react-three-fiber";
 import { Scene } from "./Scene";
 import { InfoWindow } from "./InfoWindow";
 import { useAtom, useAtomValue } from "jotai";
-import { currentNodeAtom, isFocusOnGenealogy, NodeHelper, search } from "./atom";
+import { currentNodeAtom, isFocusOnGenealogy, NodeHelper, search, showYear } from "./atom";
 import { useState } from "react";
 import { dataMap } from "./data";
 
@@ -32,17 +32,23 @@ function App() {
 			</Canvas>
 			{/* UI elements */}
 			<SearchComponent />
+			<YearSelector />
 			{selected !== null ? (
 				<>
-					<InfoWindow>
+					<InfoWindow width={300}>
 						<h2>{selected.genotype}</h2>
+						{selected.name && <p>Public name: {selected.name}</p>}
+						{selected.trialName && <p>Experiment name: {selected.trialName}</p>}
 						<p>ID: {selected.id}</p>
 						<p>Depth: {selected.depth}</p>
 						<p>Year: {selected.year}</p>
 						<p>Species: {selected.species}</p>
+						<p>Type: {selected.type}</p>
+
+						{selected.generation && <p>Generation: {selected.generation}</p>}
 					</InfoWindow>
 
-					<InfoWindow top={280}>
+					<InfoWindow top={420}>
 						<div style={{ display: "flex", flexDirection: "row", gap: "2rem" }}>
 							<button
 								style={buttonStyle}
@@ -70,7 +76,7 @@ function App() {
 							</button>
 						</div>
 					</InfoWindow>
-					<InfoWindow top={380}>
+					<InfoWindow top={300} left={20} width={300}>
 						{selected.parent && (
 							<>
 								<p>Parents</p>
@@ -111,7 +117,7 @@ function App() {
 										flexDirection: "column",
 										gap: "5px",
 										overflowY: "auto",
-										maxHeight: "300px",
+										maxHeight: "350px",
 									}}
 								>
 									{selected.children.map((child) => (
@@ -154,6 +160,29 @@ function App() {
 	);
 }
 
+function YearSelector() {
+	const [showedYear, setShowYear] = useAtom(showYear);
+
+	return (
+		<InfoWindow top={150} left={20}>
+			<div style={{ display: "flex", flexDirection: "row", gap: "2rem" }}>
+				<button
+					style={buttonStyle}
+					onMouseOver={(e) => {
+						e.currentTarget.style.transform = "scale(1.1)";
+					}}
+					onMouseOut={(e) => {
+						e.currentTarget.style.transform = "scale(1)";
+					}}
+					onClick={() => setShowYear(!showedYear)}
+				>
+					{showedYear ? "Hide Year circle" : "Show Year circle"}
+				</button>
+			</div>
+		</InfoWindow>
+	);
+}
+
 function SearchComponent() {
 	const [inputValue, setInputValue] = useState("");
 	const [, setSearch] = useAtom(search);
@@ -189,7 +218,6 @@ function SearchComponent() {
 						}}
 						onClick={() => {
 							setSearch(inputValue);
-							setInputValue(""); // Clear input after search
 						}}
 					>
 						Search
