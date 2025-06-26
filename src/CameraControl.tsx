@@ -21,7 +21,7 @@ export const KEY_FOCUS = "7";
 export function CameraControl() {
 	const controls = useRef<any>(null);
 	const { camera }: { camera: PerspectiveCamera } = useThree();
-	const [focusPressed, setFocusPressed] = useState(false);
+	const [, setFocusPressed] = useState(false);
 	const selected = useAtomValue(currentNodeAtom);
 
 	const focusProgress = useRef(1);
