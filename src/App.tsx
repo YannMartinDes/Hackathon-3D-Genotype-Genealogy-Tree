@@ -1,7 +1,6 @@
-import { Canvas } from "react-three-fiber";
-import { Scene } from "./Scene";
-import { InfoWindow } from "./InfoWindow";
 import { useAtom, useAtomValue } from "jotai";
+import { useCallback, useState } from "react";
+import { Canvas } from "react-three-fiber";
 import {
 	currentNodeAtom,
 	filteredDataAtom,
@@ -10,8 +9,9 @@ import {
 	search,
 	showYear,
 } from "./atom";
-import { useCallback, useEffect, useState } from "react";
-import { dataMap, DataWithDisplay } from "./data";
+import { dataMap } from "./data";
+import { InfoWindow } from "./InfoWindow";
+import { Scene } from "./Scene";
 import { store } from "./utils";
 
 const buttonStyle = {

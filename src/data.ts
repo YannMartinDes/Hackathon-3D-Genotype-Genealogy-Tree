@@ -110,6 +110,10 @@ function computeChildren() {
 			pNode?.children.push(node);
 			node.parentNode = pNode;
 		}
+		if (node.male) {
+			const mNode = dataMap.get(node.male);
+			mNode?.children.push(node);
+		}
 	});
 }
 computeChildren();
