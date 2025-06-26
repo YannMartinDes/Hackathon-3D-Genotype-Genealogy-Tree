@@ -48,7 +48,7 @@ function App() {
 						{selected.generation && <p>Generation: {selected.generation}</p>}
 					</InfoWindow>
 
-					<InfoWindow top={420}>
+					<InfoWindow top={250} left={20}>
 						<div style={{ display: "flex", flexDirection: "row", gap: "2rem" }}>
 							<button
 								style={buttonStyle}
@@ -76,7 +76,7 @@ function App() {
 							</button>
 						</div>
 					</InfoWindow>
-					<InfoWindow top={300} left={20} width={300}>
+					<InfoWindow top={350} width={300}>
 						{selected.parent && (
 							<>
 								<p>Parents</p>
@@ -117,7 +117,7 @@ function App() {
 										flexDirection: "column",
 										gap: "5px",
 										overflowY: "auto",
-										maxHeight: "350px",
+										maxHeight: "250px",
 									}}
 								>
 									{selected.children.map((child) => (
