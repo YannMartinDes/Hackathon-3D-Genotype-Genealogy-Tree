@@ -1,5 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
-import type { Vector3 } from "three";
+import { useEffect, useRef } from "react";
+import type { Mesh, Vector3 } from "three";
+import { dataMap, type INode } from "./data";
 
 const layerColors = [
 	"#FF8C94", // soft red
@@ -21,17 +23,30 @@ export function Box({
 	highlighted,
 	position,
 	layer,
+	node,
 }: {
 	position: Vector3;
 	onSelect: () => void;
 	selected: boolean;
 	highlighted?: boolean;
 	layer: number;
+	node: INode;
 }) {
 	const color = selected ? "hotpink" : getColorForLayer(layer);
+	const ref = useRef<Mesh>(null);
+
+	useEffect(() => {
+		const n: INode = dataMap.get(node.id)!;
+		n.ref = ref?.current;
+	}, [node, ref?.current]);
 
 	return (
-		<mesh onClick={onSelect} scale={selected || highlighted ? 1.5 : 1} position={position}>
+		<mesh
+			ref={ref}
+			onClick={() => onSelect()}
+			scale={selected || highlighted ? 1.5 : 1}
+			position={position}
+		>
 			<boxGeometry args={[1, 1, 1]} />
 			<meshStandardMaterial
 				color={color}

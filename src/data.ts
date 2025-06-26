@@ -1,4 +1,11 @@
-import { Vector3 } from "three";
+import {
+	Vector3,
+	BufferGeometry,
+	Material,
+	Mesh,
+	type NormalBufferAttributes,
+	type Object3DEventMap,
+} from "three";
 import DATA from "./data/formated.json";
 
 export interface IRawNode {
@@ -14,6 +21,11 @@ export const nodesYears: Record<number, INode[]> = {};
 export interface INode extends IRawNode {
 	coordinates: Vector3;
 	children: INode[];
+	ref?: Mesh<
+		BufferGeometry<NormalBufferAttributes>,
+		Material | Material[],
+		Object3DEventMap
+	> | null;
 }
 
 export const NODES: IRawNode[] = DATA as unknown as IRawNode[];

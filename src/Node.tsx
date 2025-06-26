@@ -21,10 +21,11 @@ export function Node({ node }: { node: INode }) {
 		<>
 			<Box
 				position={node.coordinates}
-				onSelect={() => NodeHelper.selectedNode(node)}
+				onSelect={(ref) => NodeHelper.selectedNode(node)}
 				selected={selected}
 				highlighted={amIInFamily && !selected}
 				layer={node.depth}
+				node={node}
 			/>
 			{node.children.map((child, index) => (
 				<NodeLine node={node} child={child} key={index} />

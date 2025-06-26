@@ -2,15 +2,23 @@
 import { OrbitControls } from "@react-three/drei";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useFrame, useThree } from "react-three-fiber";
-import { MOUSE } from "three";
+import { MOUSE, Vector3 } from "three";
 import { useAtomValue } from "jotai";
 import { currentNodeAtom } from "./Atom";
 
+function easeInOutCubic(t: number) {
+	return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
 export function CameraControl() {
 	const controls = useRef<any>(null);
 	const { camera } = useThree();
 	const [focusPressed, setFocusPressed] = useState(false);
+	const [focusProgress, setFocusProgress] = useState(0);
 	const selected = useAtomValue(currentNodeAtom);
+	const startPosition = useRef(new Vector3());
+	const startTarget = useRef(new Vector3());
+	const targetPosition = useRef(new Vector3());
+	const targetTarget = useRef(new Vector3());
 
 	useEffect(() => {
 		if (controls.current) {
@@ -25,7 +33,24 @@ export function CameraControl() {
 
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
-			if (e.key === "f") setFocusPressed(true);
+			if (e.key === "f" && selected?.ref && controls.current) {
+				setFocusPressed(true);
+				setFocusProgress(0);
+
+				// Save start position/target
+				startPosition.current.copy(camera.position);
+				startTarget.current.copy(controls.current.target);
+
+				// Compute new focus position/target
+				const target = selected.ref.position.clone();
+				const direction = target.clone().sub(camera.position).normalize();
+				const distance = 20;
+
+				targetTarget.current.copy(target);
+				targetPosition.current.copy(
+					target.clone().add(direction.multiplyScalar(-distance))
+				);
+			}
 		};
 
 		const handleKeyUp = (e: KeyboardEvent) => {
@@ -34,33 +59,29 @@ export function CameraControl() {
 
 		window.addEventListener("keydown", handleKeyDown);
 		window.addEventListener("keyup", handleKeyUp);
+
 		return () => {
 			window.removeEventListener("keydown", handleKeyDown);
 			window.removeEventListener("keyup", handleKeyUp);
 		};
-	}, []);
+	}, [camera, controls, selected]);
 
-	useCallback(() => {}, []);
+	// Smooth animation per frame
+	useFrame((_, delta) => {
+		if (focusProgress < 1) {
+			setFocusProgress((prev) => {
+				const next = Math.min(prev + delta * 2, 1); // duration control
+				const t = easeInOutCubic(next);
 
-	useEffect(() => {
-		if (focusPressed && selected && (selected as any).ref && controls.current) {
-			// Smoothly interpolate the target position
-			const target = (selected as any).ref.position;
-			controls.current.target.copy(target);
-			camera.lookAt(target);
+				// Interpolate camera position and controls target
+				camera.position.lerpVectors(startPosition.current, targetPosition.current, t);
+				controls.current.target.lerpVectors(startTarget.current, targetTarget.current, t);
 
-			const direction = target.clone().sub(camera.position).normalize();
-
-			// Move the camera back along this direction (zoom out)
-			const distance = 10; // Adjust this to control how far the camera pulls back
-			const newPos = target.clone().add(direction.multiplyScalar(-distance));
-
-			camera.position.copy(newPos);
-			controls.current.update();
+				controls.current.update();
+				return next;
+			});
 		}
-	}, [focusPressed, selected, controls]);
-
-	useFrame(() => {});
+	});
 
 	return <OrbitControls ref={controls} />;
 }

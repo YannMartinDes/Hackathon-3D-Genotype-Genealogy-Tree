@@ -3,6 +3,13 @@ import { atom } from "jotai";
 import { store } from "./utils";
 import { dataMap, type INode } from "./data";
 import { selectAtom } from "jotai/utils";
+import type {
+	BufferGeometry,
+	Material,
+	Mesh,
+	NormalBufferAttributes,
+	Object3DEventMap,
+} from "three";
 
 export type NodeLink = {
 	node: number;
@@ -40,7 +47,17 @@ export const isSelected = (id: number) =>
 	selectAtom(currentNodeAtom, (node): boolean => node?.id === id);
 
 export class NodeHelper {
-	static selectedNode(node: INode | null) {
+	static selectedNode(
+		node:
+			| (INode & {
+					ref?: Mesh<
+						BufferGeometry<NormalBufferAttributes>,
+						Material | Material[],
+						Object3DEventMap
+					> | null;
+			  })
+			| null
+	) {
 		store.set(currentNodeAtom, node);
 	}
 
