@@ -1,24 +1,56 @@
 import { Canvas } from "react-three-fiber";
 import { Scene } from "./Scene";
 import { InfoWindow } from "./InfoWindow";
-import { useAtomValue } from "jotai";
-import { currentNodeAtom } from "./Atom";
+import { useAtom, useAtomValue } from "jotai";
+import { currentNodeAtom, isFocusOnGenealogy } from "./Atom";
+
+const buttonStyle = {
+	padding: "10px 20px",
+	background: "linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%)",
+	color: "white",
+	border: "none",
+	borderRadius: "8px",
+	cursor: "pointer",
+	fontSize: "14px",
+	fontWeight: "bold",
+	boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+	transition: "all 0.2s ease-in-out",
+};
 
 function App() {
 	const selected = useAtomValue(currentNodeAtom);
+	const [focusFamily, setFocusFamily] = useAtom(isFocusOnGenealogy);
 
 	return (
 		<div style={{ width: "100%", height: "100%", backgroundColor: "gray" }}>
 			<Canvas camera={{ position: [0, 0, 80] }}>
 				<Scene />
 			</Canvas>
+			{/* UI elements */}
 			{selected !== null ? (
-				<InfoWindow>
-					<h2>Infos Node</h2>
-					<p>ID: {selected.id}</p>
-					<p>Depth: {selected.depth}</p>
-					{/* Tu peux mettre n’importe quoi ici */}
-				</InfoWindow>
+				<>
+					<InfoWindow>
+						<h2>{selected.genotype}</h2>
+						<p>ID: {selected.id}</p>
+						<p>Depth: {selected.depth}</p>
+						<p>Year: {selected.year}</p>
+						<p>Species: {selected.species}</p>
+					</InfoWindow>
+					<InfoWindow top={300}>
+						<button
+							style={buttonStyle}
+							onMouseOver={(e) => {
+								e.currentTarget.style.transform = "scale(1.1)";
+							}}
+							onMouseOut={(e) => {
+								e.currentTarget.style.transform = "scale(1)";
+							}}
+							onClick={() => setFocusFamily(!focusFamily)}
+						>
+							{focusFamily ? "Unfocus genealogy" : "Focus genealogy"}
+						</button>
+					</InfoWindow>
+				</>
 			) : (
 				<></>
 			)}
