@@ -2,7 +2,14 @@ import { Canvas } from "react-three-fiber";
 import { Scene } from "./Scene";
 import { InfoWindow } from "./InfoWindow";
 import { useAtom, useAtomValue } from "jotai";
-import { currentNodeAtom, isFocusOnGenealogy, NodeHelper, search, showYear } from "./atom";
+import {
+	currentNodeAtom,
+	filteredDataAtom,
+	isFocusOnGenealogy,
+	NodeHelper,
+	search,
+	showYear,
+} from "./atom";
 import { useState } from "react";
 import { dataMap, DataWithDisplay } from "./data";
 
@@ -48,7 +55,7 @@ function App() {
 						{selected.generation && <p>Generation: {selected.generation}</p>}
 					</InfoWindow>
 
-					<InfoWindow top={420}>
+					<InfoWindow top={250} left={20}>
 						<div style={{ display: "flex", flexDirection: "row", gap: "2rem" }}>
 							<button
 								style={buttonStyle}
@@ -76,7 +83,7 @@ function App() {
 							</button>
 						</div>
 					</InfoWindow>
-					<InfoWindow top={300} left={20} width={300}>
+					<InfoWindow top={350} width={300}>
 						{selected.parent && (
 							<>
 								<p>Parents</p>
@@ -117,7 +124,7 @@ function App() {
 										flexDirection: "column",
 										gap: "5px",
 										overflowY: "auto",
-										maxHeight: "350px",
+										maxHeight: "250px",
 									}}
 								>
 									{selected.children.map((child) => (
@@ -186,12 +193,13 @@ function YearSelector() {
 function SearchComponent() {
 	const [inputValue, setInputValue] = useState("");
 	const [, setSearch] = useAtom(search);
+	const [filtered] = useAtom(filteredDataAtom);
 
 	return (
 		<InfoWindow left={20}>
 			<div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
 				<label htmlFor="search" style={{ fontWeight: "bold", fontSize: "1.1rem" }}>
-					🔍 Search
+					{`🔍 Search  ${filtered.length ? `(${filtered.length} results)` : ""}`}
 				</label>
 				<div style={{ display: "flex", flexDirection: "row", gap: "0.5rem" }}>
 					<input
@@ -216,7 +224,7 @@ function SearchComponent() {
 						onMouseOut={(e) => {
 							e.currentTarget.style.transform = "scale(1)";
 						}}
-						onClick={() => {
+						onClick={async () => {
 							setSearch(inputValue);
 						}}
 					>

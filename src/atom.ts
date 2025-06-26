@@ -2,7 +2,7 @@
 import { atom } from "jotai";
 import { selectAtom } from "jotai/utils";
 import type { Mesh } from "three";
-import { dataMap, type INode } from "./data";
+import { dataMap, DataWithDisplay, type INode } from "./data";
 import { store } from "./utils";
 
 export type NodeLink = {
@@ -41,6 +41,31 @@ export const linkTypeAtom = (idCrt: number | null, idChildren: number) =>
 
 export const isSelected = (id: number) =>
 	selectAtom(currentNodeAtom, (node): boolean => node?.id === id);
+
+export const filteredDataAtom = atom<INode[]>((get) => {
+	const isFocusFamily = get(isFocusOnGenealogy);
+	const myFamily = get(myFamilyAtom);
+	const searchValue = get(search);
+
+	const data = isFocusFamily ? myFamily : DataWithDisplay;
+
+	// Pas de filtre si la recherche est vide
+	if (!searchValue || searchValue.trim() === "") {
+		return data;
+	}
+
+	return data.filter((node) => {
+		const genotype = node.genotype?.toLowerCase() || "";
+		const species = node.species?.toLowerCase() || "";
+		const searchLower = searchValue.toLowerCase();
+
+		return (
+			genotype.includes(searchLower) ||
+			species.includes(searchLower) ||
+			myFamily.some((familyNode) => familyNode.id === node.id)
+		);
+	});
+});
 
 export const isFocusOnGenealogy = atom<boolean>(false);
 export const showYear = atom<boolean>(true);
