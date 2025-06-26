@@ -1,4 +1,4 @@
-import { Vector3 } from "three";
+import { Mesh, Vector3 } from "three";
 import DATA from "./data/formated.json";
 
 export interface IRawNode {
@@ -14,6 +14,7 @@ export const nodesYears: Record<number, IRawNode[]> = {};
 export interface INode extends IRawNode {
 	coordinates: Vector3;
 	children: INode[];
+	ref?: Mesh;
 }
 
 export const NODES: IRawNode[] = DATA as unknown as IRawNode[];

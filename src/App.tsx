@@ -4,6 +4,7 @@ import { InfoWindow } from "./InfoWindow";
 import { useAtom, useAtomValue } from "jotai";
 import { currentNodeAtom, isFocusOnGenealogy, NodeHelper, search } from "./atom";
 import { useState } from "react";
+import { dataMap } from "./data";
 
 const buttonStyle = {
 	padding: "10px 20px",
@@ -17,6 +18,8 @@ const buttonStyle = {
 	boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
 	transition: "all 0.2s ease-in-out",
 };
+
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function App() {
 	const selected = useAtomValue(currentNodeAtom);
@@ -39,7 +42,7 @@ function App() {
 						<p>Species: {selected.species}</p>
 					</InfoWindow>
 
-					<InfoWindow top={300}>
+					<InfoWindow top={280}>
 						<div style={{ display: "flex", flexDirection: "row", gap: "2rem" }}>
 							<button
 								style={buttonStyle}
@@ -66,6 +69,73 @@ function App() {
 								Unselect
 							</button>
 						</div>
+					</InfoWindow>
+					<InfoWindow top={380}>
+						{selected.parent && (
+							<>
+								<p>Parents</p>
+								<button
+									style={{
+										...buttonStyle,
+										background:
+											"linear-gradient(135deg,rgb(29, 119, 41) 0%,rgb(0, 255, 21) 100%)",
+									}}
+									onMouseOver={(e) => {
+										e.currentTarget.style.transform = "scale(1.1)";
+									}}
+									onMouseOut={(e) => {
+										e.currentTarget.style.transform = "scale(1)";
+									}}
+									onClick={async () => {
+										NodeHelper.selectedNode(dataMap.get(selected.parent!)!);
+										await wait(200); // wait 1s
+										window.dispatchEvent(
+											new KeyboardEvent("keydown", {
+												key: "f",
+												bubbles: true,
+											})
+										);
+									}}
+								>
+									{dataMap.get(selected.parent)!.genotype ?? "Unselect"}
+								</button>
+							</>
+						)}
+						{selected.children.length > 0 && (
+							<>
+								<p>Children</p>
+								<div style={{ overflowY: "auto", maxHeight: "300px" }}>
+									{selected.children.map((child) => (
+										<button
+											key={child.id}
+											style={{
+												...buttonStyle,
+												background:
+													"linear-gradient(135deg,rgb(29, 119, 41) 0%,rgb(0, 255, 21) 100%)",
+											}}
+											onMouseOver={(e) => {
+												e.currentTarget.style.transform = "scale(1.1)";
+											}}
+											onMouseOut={(e) => {
+												e.currentTarget.style.transform = "scale(1)";
+											}}
+											onClick={async () => {
+												NodeHelper.selectedNode(child);
+												await wait(200); // wait 1s
+												window.dispatchEvent(
+													new KeyboardEvent("keydown", {
+														key: "f",
+														bubbles: true,
+													})
+												);
+											}}
+										>
+											{child.genotype}
+										</button>
+									))}
+								</div>
+							</>
+						)}
 					</InfoWindow>
 				</>
 			) : (

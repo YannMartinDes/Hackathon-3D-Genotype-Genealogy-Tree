@@ -61,9 +61,9 @@ export const myFamilyAtom = selectAtom(nodeLinkAtom, (nodeLinkMap): INode[] => {
 });
 
 export class NodeHelper {
-	static selectedNode(node: INode | null, ref: Mesh | null) {
+	static selectedNode(node: INode | null) {
 		store.set(currentNodeAtom, node);
-		store.set(currentRef, ref);
+		store.set(currentRef, node?.ref ?? null);
 	}
 	static unselectNode() {
 		store.set(currentNodeAtom, null);

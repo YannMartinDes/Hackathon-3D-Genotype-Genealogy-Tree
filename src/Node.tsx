@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useAtom, useAtomValue } from "jotai";
 import { useMemo, useRef } from "react";
 import { Box } from "./Box";
@@ -20,7 +21,6 @@ export function Node({ node }: { node: INode }) {
 
 	const ref = useRef<Mesh>(null);
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const textRef = useRef<any>(null);
 	const { camera } = useThree();
 	useFrame(() => {
@@ -37,9 +37,14 @@ export function Node({ node }: { node: INode }) {
 	return (
 		<>
 			<Box
-				meshRef={ref}
+				meshRef={
+					((meshRef: any) => {
+						ref.current = meshRef;
+						node.ref = meshRef;
+					}) as any
+				}
 				position={node.coordinates}
-				onSelect={() => NodeHelper.selectedNode(node, ref.current)}
+				onSelect={() => NodeHelper.selectedNode(node)}
 				selected={selected}
 				highlighted={amIInFamily && !selected}
 				layer={layer}
