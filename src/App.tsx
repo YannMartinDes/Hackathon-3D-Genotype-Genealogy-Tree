@@ -118,7 +118,7 @@ function App() {
 							</button>
 						</div>
 					</InfoWindow>
-					<InfoWindow top={350} width={400}>
+					<InfoWindow top={400} width={400}>
 						{(selected.parent || selected.male) && (
 							<>
 								<p>Parents</p>
