@@ -15,6 +15,7 @@ export type LinkType = { type: "children" | "parent" | "none"; distance: number 
 
 export const currentNodeAtom = atom<INode | null>(null);
 export const currentRef = atom<Mesh | null>(null);
+export const search = atom<string | undefined>();
 export const nodeLinkAtom = atom<Map<string, NodeLink>>((get) => {
 	const currentNode = get(currentNodeAtom);
 	return NodeHelper.computeGenealogyTree(currentNode as INode);
@@ -63,6 +64,11 @@ export class NodeHelper {
 	static selectedNode(node: INode | null, ref: Mesh | null) {
 		store.set(currentNodeAtom, node);
 		store.set(currentRef, ref);
+	}
+	static unselectNode() {
+		store.set(currentNodeAtom, null);
+		store.set(currentRef, null);
+		store.set(search, undefined);
 	}
 
 	static computeGenealogyTree(node: INode | null) {

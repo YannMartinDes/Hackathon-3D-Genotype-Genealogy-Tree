@@ -2,10 +2,12 @@ export function InfoWindow({
 	children,
 	top,
 	right,
+	left,
 }: {
 	children: React.ReactNode;
 	top?: number;
 	right?: number;
+	left?: number;
 }) {
 	return (
 		<div
@@ -13,6 +15,7 @@ export function InfoWindow({
 				position: "fixed",
 				top: top ?? 20,
 				right: right ?? 20,
+				left: left ?? "auto",
 				width: 300,
 				padding: 20,
 				backgroundColor: "rgba(0,0,0,0.7)",
