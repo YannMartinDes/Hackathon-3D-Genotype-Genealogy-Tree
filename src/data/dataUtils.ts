@@ -4,6 +4,11 @@ type RawItem = {
 	"Species (C0002)": string;
 	"Female data ID (FEMALE_DATA_ID)": number | "" | null;
 	"Registration year (C0159)": number;
+	"Male data ID (MALE_DATA_ID)": number | "" | null;
+	"Experimental name (C0012)": string;
+	"Public name (C0003)": string;
+	"Type (C0005)": string;
+	"Generation (C0004)": string;
 };
 
 type TransformedItem = {
@@ -13,6 +18,12 @@ type TransformedItem = {
 	year: number;
 	depth: number;
 	parent: number | null;
+
+	male: number | null;
+	type: string;
+	generation: string;
+	name: string;
+	trialName: string;
 };
 
 export function transformDataset(rawData: RawItem[]): TransformedItem[] {
@@ -54,6 +65,15 @@ export function transformDataset(rawData: RawItem[]): TransformedItem[] {
 				typeof item["Female data ID (FEMALE_DATA_ID)"] === "number"
 					? item["Female data ID (FEMALE_DATA_ID)"]
 					: null,
+			male:
+				typeof item["Male data ID (MALE_DATA_ID)"] === "number"
+					? item["Male data ID (MALE_DATA_ID)"]
+					: null,
+
+			type: item["Type (C0005)"],
+			generation: item["Generation (C0004)"],
+			name: item["Public name (C0003)"],
+			trialName: item["Experimental name (C0012)"],
 		};
 	});
 
