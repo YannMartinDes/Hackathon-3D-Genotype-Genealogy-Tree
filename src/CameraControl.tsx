@@ -4,7 +4,7 @@ import { useAtomValue } from "jotai";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useFrame, useThree } from "react-three-fiber";
 import { Box3, MOUSE, PerspectiveCamera, Vector3 } from "three";
-import { currentNodeAtom } from "./Atom";
+import { currentNodeAtom } from "./atom";
 import { DataWithDisplay, type INode } from "./data";
 
 function easeInOutCubic(t: number) {
@@ -15,6 +15,8 @@ function getAllChildren(node: INode): INode[] {
 	const nodes = node.children.map((a) => getAllChildren(a)).flat();
 	return [node, ...nodes];
 }
+
+export const KEY_FOCUS = "7";
 
 export function CameraControl() {
 	const controls = useRef<any>(null);
@@ -39,37 +41,41 @@ export function CameraControl() {
 		}
 	}, []);
 
-	const focus = useCallback((nodes: INode[]) => {
-		setFocusPressed(true);
-		if (nodes.length === 0) return;
-		focusProgress.current = 0;
+	const focus = useCallback(
+		(nodes: INode[]) => {
+			setFocusPressed(true);
+			if (nodes.length === 0) return;
+			focusProgress.current = 0;
 
-		const box = new Box3();
+			const box = new Box3();
+			startPosition.current.copy(camera.position);
+			startTarget.current.copy(controls.current.target);
+			nodes.forEach((n) => box.expandByPoint(n.position));
+			const center = new Vector3();
+			box.getCenter(center);
+			const size = new Vector3();
+			box.getSize(size);
+			const maxDim = Math.max(size.x, size.y, size.z);
+			// Determine the distance needed to fit the bounding box in view
+			const fov = camera.fov * (Math.PI / 180);
+			const fitHeightDistance = maxDim / (2 * Math.tan(fov / 2));
+			const fitWidthDistance = fitHeightDistance / camera.aspect;
+			const distance = 1.2 * Math.max(fitHeightDistance, fitWidthDistance); // Add margin
 
-		nodes.forEach((n) => box.expandByPoint(n.position));
-		const center = new Vector3();
-		box.getCenter(center);
-		const size = new Vector3();
-		box.getSize(size);
-		const maxDim = Math.max(size.x, size.y, size.z);
-		// Determine the distance needed to fit the bounding box in view
-		const fov = camera.fov * (Math.PI / 180);
-		const fitHeightDistance = maxDim / (2 * Math.tan(fov / 2));
-		const fitWidthDistance = fitHeightDistance / camera.aspect;
-		const distance = 1.2 * Math.max(fitHeightDistance, fitWidthDistance); // Add margin
+			// Direction from camera to center
+			const direction = new Vector3()
+				.subVectors(camera.position, controls.current.target)
+				.normalize();
 
-		// Direction from camera to center
-		const direction = new Vector3()
-			.subVectors(camera.position, controls.current.target)
-			.normalize();
-
-		targetTarget.current.copy(center);
-		targetPosition.current.copy(center.clone().add(direction.multiplyScalar(distance)));
-	}, []);
+			targetTarget.current.copy(center);
+			targetPosition.current.copy(center.clone().add(direction.multiplyScalar(distance)));
+		},
+		[focusProgress.current, targetTarget.current, targetPosition.current]
+	);
 
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
-			if (e.key === "f" && selected && controls.current) {
+			if (e.key === KEY_FOCUS && selected && controls.current) {
 				setFocusPressed(true);
 				focusProgress.current = 0;
 
@@ -86,15 +92,15 @@ export function CameraControl() {
 				targetPosition.current.copy(
 					target.clone().add(direction.multiplyScalar(-distance))
 				);
-			} else if (e.key === "g" && controls.current) {
+			} else if (e.key === "8" && controls.current) {
 				focus(DataWithDisplay);
-			} else if (e.key === "r" && selected && controls.current) {
+			} else if (e.key === "9" && selected && controls.current) {
 				focus(getAllChildren(selected));
 			}
 		};
 
 		const handleKeyUp = (e: KeyboardEvent) => {
-			if (e.key === "f") setFocusPressed(false);
+			if (e.key === KEY_FOCUS) setFocusPressed(false);
 		};
 
 		window.addEventListener("keydown", handleKeyDown);

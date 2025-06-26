@@ -13,6 +13,7 @@ import { dataMap } from "./data";
 import { InfoWindow } from "./InfoWindow";
 import { Scene } from "./Scene";
 import { store } from "./utils";
+import { KEY_FOCUS } from "./CameraControl";
 
 const buttonStyle = {
 	padding: "10px 20px",
@@ -148,7 +149,7 @@ function App() {
 												await wait(200); // wait 1s
 												window.dispatchEvent(
 													new KeyboardEvent("keydown", {
-														key: "f",
+														key: KEY_FOCUS,
 														bubbles: true,
 													})
 												);
@@ -177,7 +178,7 @@ function App() {
 												await wait(200); // wait 1s
 												window.dispatchEvent(
 													new KeyboardEvent("keydown", {
-														key: "f",
+														key: KEY_FOCUS,
 														bubbles: true,
 													})
 												);
@@ -234,7 +235,7 @@ function App() {
 													await wait(200); // wait 1s
 													window.dispatchEvent(
 														new KeyboardEvent("keydown", {
-															key: "f",
+															key: KEY_FOCUS,
 															bubbles: true,
 														})
 													);
@@ -284,7 +285,7 @@ function App() {
 													await wait(200); // wait 1s
 													window.dispatchEvent(
 														new KeyboardEvent("keydown", {
-															key: "f",
+															key: KEY_FOCUS,
 															bubbles: true,
 														})
 													);
@@ -341,7 +342,7 @@ function SearchComponent() {
 			wait(200).then(() => {
 				window.dispatchEvent(
 					new KeyboardEvent("keydown", {
-						key: "f",
+						key: KEY_FOCUS,
 						bubbles: true,
 					})
 				);
