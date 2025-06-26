@@ -1,15 +1,9 @@
 /* eslint-disable react-refresh/only-export-components */
 import { atom } from "jotai";
-import { store } from "./utils";
-import { dataMap, type INode } from "./data";
 import { selectAtom } from "jotai/utils";
-import type {
-	BufferGeometry,
-	Material,
-	Mesh,
-	NormalBufferAttributes,
-	Object3DEventMap,
-} from "three";
+import type { Mesh } from "three";
+import { dataMap, type INode } from "./data";
+import { store } from "./utils";
 
 export type NodeLink = {
 	node: number;
@@ -20,6 +14,7 @@ export type NodeLink = {
 export type LinkType = { type: "children" | "parent" | "none"; distance: number };
 
 export const currentNodeAtom = atom<INode | null>(null);
+export const currentRef = atom<Mesh | null>(null);
 export const nodeLinkAtom = atom<Map<string, NodeLink>>((get) => {
 	const currentNode = get(currentNodeAtom);
 	return NodeHelper.computeGenealogyTree(currentNode as INode);
@@ -65,18 +60,9 @@ export const myFamilyAtom = selectAtom(nodeLinkAtom, (nodeLinkMap): INode[] => {
 });
 
 export class NodeHelper {
-	static selectedNode(
-		node:
-			| (INode & {
-					ref?: Mesh<
-						BufferGeometry<NormalBufferAttributes>,
-						Material | Material[],
-						Object3DEventMap
-					> | null;
-			  })
-			| null
-	) {
+	static selectedNode(node: INode | null, ref: Mesh | null) {
 		store.set(currentNodeAtom, node);
+		store.set(currentRef, ref);
 	}
 
 	static computeGenealogyTree(node: INode | null) {

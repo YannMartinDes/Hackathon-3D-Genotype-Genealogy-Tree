@@ -5,7 +5,7 @@ import type { INode } from "./data";
 import { GenLine } from "./GenLine";
 import { amIInSelectedFamily, isSelected, linkTypeAtom, NodeHelper, type LinkType } from "./Atom";
 import { Text } from "@react-three/drei";
-import { Vector3 } from "three";
+import { Mesh, Vector3 } from "three";
 import _ from "lodash";
 import { useThree, useFrame } from "react-three-fiber";
 
@@ -18,6 +18,9 @@ export function Node({ node }: { node: INode }) {
 		}, [node.id])
 	);
 
+	const ref = useRef<Mesh>(null);
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const textRef = useRef<any>(null);
 	const { camera } = useThree();
 	useFrame(() => {
@@ -29,12 +32,12 @@ export function Node({ node }: { node: INode }) {
 	return (
 		<>
 			<Box
+				ref={ref}
 				position={node.coordinates}
-				onSelect={() => NodeHelper.selectedNode(node)}
+				onSelect={() => NodeHelper.selectedNode(node, ref.current)}
 				selected={selected}
 				highlighted={amIInFamily && !selected}
 				layer={node.depth}
-				node={node}
 			/>
 			{node.children.map((child, index) => (
 				<NodeLine node={node} child={child} key={index} />
