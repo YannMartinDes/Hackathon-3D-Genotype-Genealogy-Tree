@@ -10,6 +10,7 @@ export interface IRawNode {
 	parent: number | null;
 }
 
+export const nodesYears: Record<number, INode[]> = {};
 export interface INode extends IRawNode {
 	coordinates: Vector3;
 	children: INode[];
@@ -28,11 +29,22 @@ const computeCoordinates = (node: IRawNode): Vector3 => {
 
 	return new Vector3(x, y, z);
 };
-export const DataWithDisplay: INode[] = NODES.map((elt) => ({
-	...elt,
-	coordinates: computeCoordinates(elt),
-	children: [],
-}));
+
+export const DataWithDisplay: INode[] = NODES.map((elt) => {
+	const node = {
+		...elt,
+		coordinates: computeCoordinates(elt),
+		children: [],
+	};
+
+	if (!nodesYears[elt.year]) {
+		nodesYears[elt.year] = [];
+	}
+
+	nodesYears[elt.year].push(node);
+
+	return node;
+});
 
 export const dataMap = new Map<number, INode>(DataWithDisplay.map((node) => [node.id, node]));
 function computeChildren() {
