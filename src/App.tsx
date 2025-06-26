@@ -10,8 +10,9 @@ import {
 	search,
 	showYear,
 } from "./atom";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { dataMap, DataWithDisplay } from "./data";
+import { store } from "./utils";
 
 const buttonStyle = {
 	padding: "10px 20px",
@@ -195,6 +196,21 @@ function SearchComponent() {
 	const [, setSearch] = useAtom(search);
 	const [filtered] = useAtom(filteredDataAtom);
 
+	const onSearch = useCallback(() => {
+		const a = store.get(filteredDataAtom);
+		if (a.length > 0) {
+			NodeHelper.selectedNode(a[0]);
+			wait(200).then(() => {
+				window.dispatchEvent(
+					new KeyboardEvent("keydown", {
+						key: "f",
+						bubbles: true,
+					})
+				);
+			});
+		}
+	}, [filteredDataAtom]);
+
 	return (
 		<InfoWindow left={20}>
 			<div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
@@ -226,49 +242,11 @@ function SearchComponent() {
 						}}
 						onClick={async () => {
 							setSearch(inputValue);
+							onSearch();
 						}}
 					>
 						Search
 					</button>
-				</div>
-				<div
-					style={{
-						padding: "5px 15px",
-						display: "flex",
-						flexDirection: "column",
-						gap: "5px",
-						overflowY: "auto",
-						maxHeight: "350px",
-					}}
-				>
-					{DataWithDisplay.map((child) => (
-						<button
-							key={child.id}
-							style={{
-								...buttonStyle,
-								background:
-									"linear-gradient(135deg,rgb(29, 119, 41) 0%,rgb(0, 255, 21) 100%)",
-							}}
-							onMouseOver={(e) => {
-								e.currentTarget.style.transform = "scale(1.1)";
-							}}
-							onMouseOut={(e) => {
-								e.currentTarget.style.transform = "scale(1)";
-							}}
-							onClick={async () => {
-								NodeHelper.selectedNode(child);
-								await wait(200); // wait 1s
-								window.dispatchEvent(
-									new KeyboardEvent("keydown", {
-										key: "f",
-										bubbles: true,
-									})
-								);
-							}}
-						>
-							{child.genotype}
-						</button>
-					))}
 				</div>
 			</div>
 		</InfoWindow>

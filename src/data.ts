@@ -19,6 +19,7 @@ export const nodesYears: Record<number, INode[]> = {};
 export interface INode extends IRawNode {
 	coordinates: Vector3;
 	children: INode[];
+	parentNode?: INode;
 	ref?: Mesh;
 }
 
@@ -50,12 +51,14 @@ function placeNode3D(baseDir: Vector3, radius: number, maxAngle: number): Vector
 }
 
 function computeCoordinatesV2(node: INode) {
-	if (!node.parent) {
+	const parent = node.parentNode;
+	if (
+		!parent ||
+		(parent.coordinates.x === 0 && parent.coordinates.y === 0 && parent.coordinates.z === 0)
+	) {
 		node.coordinates = computeCoordinatesV1(node);
 		return;
 	}
-
-	const parent = dataMap.get(node.parent) as INode;
 	const yearIndex = YEAR_LIST.indexOf(node.year);
 	const radius = 20 * (yearIndex + 1);
 
@@ -66,10 +69,14 @@ function computeCoordinatesV2(node: INode) {
 }
 
 function asd() {
-	Object.keys(nodesYears).map((year: string) => {
-		nodesYears[Number(year)].map((node) => {
-			computeCoordinatesV2(node);
-		});
+	YEAR_LIST.map((year: number) => {
+		nodesYears[year]
+			.sort((a, b) => {
+				return (a.parentNode?.year ?? 0) - (b.parentNode?.year ?? 0);
+			})
+			.map((node) => {
+				computeCoordinatesV2(node);
+			});
 	});
 }
 
@@ -99,7 +106,9 @@ export const dataMap = new Map<number, INode>(DataWithDisplay.map((node) => [nod
 function computeChildren() {
 	DataWithDisplay.forEach((node) => {
 		if (node.parent) {
-			dataMap.get(node.parent)?.children.push(node);
+			const pNode = dataMap.get(node.parent);
+			pNode?.children.push(node);
+			node.parentNode = pNode;
 		}
 	});
 }
