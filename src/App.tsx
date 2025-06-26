@@ -104,7 +104,16 @@ function App() {
 						{selected.children.length > 0 && (
 							<>
 								<p>Children</p>
-								<div style={{ overflowY: "auto", maxHeight: "300px" }}>
+								<div
+									style={{
+										padding: "5px 15px",
+										display: "flex",
+										flexDirection: "column",
+										gap: "5px",
+										overflowY: "auto",
+										maxHeight: "300px",
+									}}
+								>
 									{selected.children.map((child) => (
 										<button
 											key={child.id}
