@@ -79,7 +79,6 @@ export function CameraControl() {
 			controls.current.update();
 			focusProgress.current = next;
 		}
-		console.log(focusProgress.current);
 	});
 
 	return <OrbitControls ref={controls} />;
