@@ -6,7 +6,7 @@ import { YEAR_LIST, type INode } from "./data";
 import { GenLine } from "./GenLine";
 import { amIInSelectedFamily, isSelected, linkTypeAtom, NodeHelper, type LinkType } from "./atom";
 import { Text } from "@react-three/drei";
-import { Mesh, Vector3 } from "three";
+import { Vector3 } from "three";
 import _ from "lodash";
 import { useThree, useFrame } from "react-three-fiber";
 
@@ -18,8 +18,6 @@ export function Node({ node }: { node: INode }) {
 			return amIInSelectedFamily(node.id);
 		}, [node.id])
 	);
-
-	const ref = useRef<Mesh>(null);
 
 	const textRef = useRef<any>(null);
 	const { camera } = useThree();
@@ -37,13 +35,7 @@ export function Node({ node }: { node: INode }) {
 	return (
 		<>
 			<Box
-				meshRef={
-					((meshRef: any) => {
-						ref.current = meshRef;
-						node.ref = meshRef;
-					}) as any
-				}
-				position={node.coordinates}
+				position={node.position}
 				onSelect={() => NodeHelper.selectedNode(node)}
 				selected={selected}
 				highlighted={amIInFamily && !selected}
@@ -56,7 +48,7 @@ export function Node({ node }: { node: INode }) {
 			{(selected || amIInFamily) && (
 				<Text
 					ref={textRef}
-					position={_.clone(node.coordinates).add(new Vector3(0, 1, 1))}
+					position={_.clone(node.position).add(new Vector3(0, 1, 1))}
 					fontSize={2}
 					color="white"
 					anchorX="center"
@@ -75,5 +67,5 @@ function NodeLine({ node, child }: { node: INode; child: INode }) {
 	);
 	if (linkType.type === "none") return null;
 
-	return <GenLine start={node.coordinates} end={child.coordinates} link={linkType as LinkType} />;
+	return <GenLine start={node.position} end={child.position} link={linkType as LinkType} />;
 }

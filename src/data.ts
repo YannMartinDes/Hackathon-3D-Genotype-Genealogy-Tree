@@ -17,10 +17,9 @@ export interface IRawNode {
 
 export const nodesYears: Record<number, INode[]> = {};
 export interface INode extends IRawNode {
-	coordinates: Vector3;
+	position: Vector3;
 	children: INode[];
 	parentNode?: INode;
-	ref?: Mesh;
 }
 
 export const NODES: IRawNode[] = DATA as unknown as IRawNode[];
@@ -54,18 +53,18 @@ function computeCoordinatesV2(node: INode) {
 	const parent = node.parentNode;
 	if (
 		!parent ||
-		(parent.coordinates.x === 0 && parent.coordinates.y === 0 && parent.coordinates.z === 0)
+		(parent.position.x === 0 && parent.position.y === 0 && parent.position.z === 0)
 	) {
-		node.coordinates = computeCoordinatesV1(node);
+		node.position = computeCoordinatesV1(node);
 		return;
 	}
 	const yearIndex = YEAR_LIST.indexOf(node.year);
 	const radius = 20 * (yearIndex + 1);
 
-	const baseDir = parent.coordinates.clone().normalize();
+	const baseDir = parent.position.clone().normalize();
 
 	const maxAngle = Math.PI / 3; // 30 degrees
-	node.coordinates = placeNode3D(baseDir, radius, maxAngle);
+	node.position = placeNode3D(baseDir, radius, maxAngle);
 }
 
 function asd() {
@@ -89,7 +88,7 @@ function computeYear() {
 export const DataWithDisplay: INode[] = NODES.map((elt) => {
 	const node = {
 		...elt,
-		coordinates: new Vector3(),
+		position: new Vector3(),
 		children: [],
 	};
 

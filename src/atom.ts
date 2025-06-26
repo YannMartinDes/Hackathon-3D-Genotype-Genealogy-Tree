@@ -1,7 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { atom } from "jotai";
 import { selectAtom } from "jotai/utils";
-import type { Mesh } from "three";
 import { dataMap, DataWithDisplay, type INode } from "./data";
 import { store } from "./utils";
 
@@ -14,7 +13,6 @@ export type NodeLink = {
 export type LinkType = { type: "children" | "parent" | "none"; distance: number };
 
 export const currentNodeAtom = atom<INode | null>(null);
-export const currentRef = atom<Mesh | null>(null);
 export const search = atom<string | undefined>();
 export const nodeLinkAtom = atom<Map<string, NodeLink>>((get) => {
 	const currentNode = get(currentNodeAtom);
@@ -89,11 +87,9 @@ export const myFamilyAtom = selectAtom(nodeLinkAtom, (nodeLinkMap): INode[] => {
 export class NodeHelper {
 	static selectedNode(node: INode | null) {
 		store.set(currentNodeAtom, node);
-		store.set(currentRef, node?.ref ?? null);
 	}
 	static unselectNode() {
 		store.set(currentNodeAtom, null);
-		store.set(currentRef, null);
 		store.set(search, undefined);
 		store.set(isFocusOnGenealogy, false);
 	}

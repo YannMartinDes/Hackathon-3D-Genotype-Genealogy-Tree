@@ -4,17 +4,23 @@ import { useAtomValue } from "jotai";
 import { useEffect, useRef, useState } from "react";
 import { useFrame, useThree } from "react-three-fiber";
 import { MOUSE, Vector3 } from "three";
-import { currentRef } from "./Atom";
+import { currentNodeAtom } from "./Atom";
+import type { INode } from "./data";
 
 function easeInOutCubic(t: number) {
 	return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
+
+function getAllChildren(node: INode): INode[] {
+	return node.children.flatMap((a) => getAllChildren(a));
+}
+
 export function CameraControl() {
 	const controls = useRef<any>(null);
 	const { camera } = useThree();
 	const [focusPressed, setFocusPressed] = useState(false);
+	const selected = useAtomValue(currentNodeAtom);
 
-	const selected = useAtomValue(currentRef);
 	const focusProgress = useRef(1);
 	const startPosition = useRef(new Vector3());
 	const startTarget = useRef(new Vector3());
@@ -37,6 +43,25 @@ export function CameraControl() {
 			if (e.key === "f" && selected && controls.current) {
 				setFocusPressed(true);
 				focusProgress.current = 0;
+
+				// Save start position/target
+				startPosition.current.copy(camera.position);
+				startTarget.current.copy(controls.current.target);
+
+				// Compute new focus position/target
+				const target = selected.position.clone();
+				const direction = target.clone().sub(camera.position).normalize();
+				const distance = 20;
+
+				targetTarget.current.copy(target);
+				targetPosition.current.copy(
+					target.clone().add(direction.multiplyScalar(-distance))
+				);
+			} else if (e.key === "g" && selected && controls.current) {
+				setFocusPressed(true);
+				focusProgress.current = 0;
+
+				//const nodes = getAllChildren(selected);
 
 				// Save start position/target
 				startPosition.current.copy(camera.position);

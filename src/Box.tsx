@@ -21,20 +21,17 @@ export function Box({
 	highlighted,
 	position,
 	layer,
-	meshRef,
 }: {
 	position: Vector3;
 	onSelect: () => void;
 	selected: boolean;
 	highlighted?: boolean;
 	layer: number;
-	meshRef?: React.RefObject<Mesh | null>;
 }) {
 	const color = selected ? "hotpink" : getColorForLayer(layer);
 
 	return (
 		<mesh
-			ref={meshRef}
 			onClick={() => onSelect()}
 			scale={selected || highlighted ? 1.5 : 1}
 			position={position}
