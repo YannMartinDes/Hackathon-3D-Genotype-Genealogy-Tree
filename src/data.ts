@@ -1,7 +1,7 @@
-import {
-	Vector3
-} from "three";
+import { Vector3 } from "three";
 import DATA from "./data/formated.json";
+
+export interface IRawNode {
 	id: number;
 	species: string;
 	genotype: string;
