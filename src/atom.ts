@@ -19,16 +19,16 @@ export const nodeLinkAtom = atom<Map<string, NodeLink>>((get) => {
 });
 
 export const amIInSelectedFamily = (id: number) =>
-	selectAtom(nodeLinkAtom, (node): boolean => {
-		if (!node) return false;
-		const links = Array.from(node.values());
+	selectAtom(nodeLinkAtom, (nodeLinkMap): boolean => {
+		if (!nodeLinkMap) return false;
+		const links = Array.from(nodeLinkMap.values());
 		return links.some((link) => link.node === id || link.children === id);
 	});
 
 export const linkTypeAtom = (idCrt: number | null, idChildren: number) =>
-	selectAtom(nodeLinkAtom, (node): LinkType => {
+	selectAtom(nodeLinkAtom, (nodeLinkMap): LinkType => {
 		if (idCrt === null) return { type: "none", distance: -1 };
-		const isLinkToSelection = node.get(idCrt + ":" + idChildren);
+		const isLinkToSelection = nodeLinkMap.get(idCrt + ":" + idChildren);
 		if (!isLinkToSelection) return { type: "none", distance: -1 };
 
 		return isLinkToSelection.isChildren
@@ -38,6 +38,24 @@ export const linkTypeAtom = (idCrt: number | null, idChildren: number) =>
 
 export const isSelected = (id: number) =>
 	selectAtom(currentNodeAtom, (node): boolean => node?.id === id);
+
+export const isFocusOnGenealogy = atom<boolean>(false);
+
+export const myFamilyAtom = selectAtom(nodeLinkAtom, (nodeLinkMap): INode[] => {
+	if (!nodeLinkMap) return [];
+
+	const links = Array.from(nodeLinkMap.values());
+
+	const familyIds = new Set<number>();
+	for (const link of links) {
+		familyIds.add(link.node);
+		familyIds.add(link.children);
+	}
+
+	return Array.from(familyIds)
+		.map((id) => dataMap.get(id))
+		.filter(Boolean) as INode[];
+});
 
 export class NodeHelper {
 	static selectedNode(node: INode | null) {

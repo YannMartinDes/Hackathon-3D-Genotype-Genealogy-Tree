@@ -3,9 +3,14 @@ import { CameraControl } from "./CameraControl";
 import { DataWithDisplay, nodesYears } from "./data";
 import { Node } from "./Node";
 import { YearSphere } from "./YearSphere";
+import { useAtomValue } from "jotai";
+import { isFocusOnGenealogy, myFamilyAtom } from "./Atom";
 
 export function Scene() {
 	const years = useMemo(() => Object.keys(nodesYears).map((year) => Number(year)), [nodesYears]);
+
+	const myFamily = useAtomValue(myFamilyAtom);
+	const isFocusFamily = useAtomValue(isFocusOnGenealogy);
 
 	return (
 		<>
@@ -15,7 +20,7 @@ export function Scene() {
 			{years.map((year, i) => (
 				<YearSphere key={year + i} year={Number(year)} gap={i} />
 			))}
-			{DataWithDisplay.map((node) => (
+			{(isFocusFamily ? myFamily : DataWithDisplay).map((node) => (
 				<Node key={node.id} node={node} />
 			))}
 		</>

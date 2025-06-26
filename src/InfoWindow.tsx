@@ -1,10 +1,18 @@
-export function InfoWindow({ children }: { children: React.ReactNode }) {
+export function InfoWindow({
+	children,
+	top,
+	right,
+}: {
+	children: React.ReactNode;
+	top?: number;
+	right?: number;
+}) {
 	return (
 		<div
 			style={{
 				position: "fixed",
-				top: 20,
-				right: 20,
+				top: top ?? 20,
+				right: right ?? 20,
 				width: 300,
 				padding: 20,
 				backgroundColor: "rgba(0,0,0,0.7)",
