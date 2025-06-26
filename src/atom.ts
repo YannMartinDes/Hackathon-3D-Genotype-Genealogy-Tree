@@ -69,6 +69,7 @@ export class NodeHelper {
 		store.set(currentNodeAtom, null);
 		store.set(currentRef, null);
 		store.set(search, undefined);
+		store.set(isFocusOnGenealogy, false);
 	}
 
 	static computeGenealogyTree(node: INode | null) {
