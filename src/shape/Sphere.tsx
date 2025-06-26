@@ -33,10 +33,7 @@ export function Sphere({ radius }: { radius: number }) {
 	useFrame(() => {
 		if (materialRef.current) {
 			// camera.getWorldDirection gives the current forward vector
-			const cameraDirection = camera.position
-				.clone()
-				.normalize()
-				.add(new Vector3(0, 0, 1));
+			const cameraDirection = camera.position.clone().normalize();
 
 			materialRef.current.uniforms.cameraDirection.value.copy(cameraDirection);
 		}
