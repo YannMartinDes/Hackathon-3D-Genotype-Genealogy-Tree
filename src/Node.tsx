@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useAtom, useAtomValue } from "jotai";
-import { useMemo, useRef } from "react";
-import { Box } from "./Box";
-import { YEAR_LIST, type INode } from "./data";
-import { GenLine } from "./GenLine";
-import { amIInSelectedFamily, isSelected, linkTypeAtom, NodeHelper, type LinkType } from "./atom";
 import { Text } from "@react-three/drei";
-import { Mesh, Vector3 } from "three";
+import { useAtom, useAtomValue } from "jotai";
 import _ from "lodash";
-import { useThree, useFrame } from "react-three-fiber";
+import { useMemo, useRef } from "react";
+import { useFrame, useThree } from "react-three-fiber";
+import { Mesh, Vector3 } from "three";
+import { amIInSelectedFamily, isSelected, linkTypeAtom, NodeHelper, type LinkType } from "./atom";
+import { Box } from "./Box";
+import { dataMap, YEAR_LIST, type INode } from "./data";
+import { GenLine } from "./GenLine";
 
 export function Node({ node }: { node: INode }) {
 	const [selected] = useAtom(useMemo(() => isSelected(node.id), [node.id]));
@@ -34,6 +34,11 @@ export function Node({ node }: { node: INode }) {
 		return yearIndex + 1;
 	}, [node.year]);
 
+	const parentM = useMemo(() => {
+		if (node.male === null) return null;
+		return dataMap.get(node.male) ?? null;
+	}, [node.male]);
+
 	return (
 		<>
 			<Box
@@ -52,6 +57,9 @@ export function Node({ node }: { node: INode }) {
 			{node.children.map((child, index) => (
 				<NodeLine node={node} child={child} key={index} />
 			))}
+			{amIInFamily && parentM && (
+				<NodeLine node={parentM} child={node} key={"male_" + node.id} />
+			)}
 
 			{(selected || amIInFamily) && (
 				<Text

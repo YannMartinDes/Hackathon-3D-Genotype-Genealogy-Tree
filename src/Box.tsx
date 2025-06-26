@@ -30,13 +30,13 @@ export function Box({
 	layer: number;
 	meshRef?: React.RefObject<Mesh | null>;
 }) {
-	const color = selected ? "hotpink" : getColorForLayer(layer);
+	const color = selected ? "yellow" : getColorForLayer(layer);
 
 	return (
 		<mesh
 			ref={meshRef}
 			onClick={() => onSelect()}
-			scale={selected || highlighted ? 1.5 : 1}
+			scale={selected || highlighted ? 3 : 1}
 			position={position}
 		>
 			<sphereGeometry args={[0.5, 32, 32]} />
@@ -49,7 +49,7 @@ export function Box({
 			{highlighted && (
 				<mesh scale={1.3}>
 					<sphereGeometry args={[0.5, 32, 32]} />
-					<meshBasicMaterial color="white" transparent opacity={0.4} />
+					<meshBasicMaterial color="white" transparent opacity={0.5} />
 				</mesh>
 			)}
 		</mesh>

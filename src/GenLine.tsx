@@ -1,7 +1,7 @@
 import { Vector3, Color } from "three";
 import { Line } from "@react-three/drei";
 import { useMemo } from "react";
-import type { LinkType } from "./Atom";
+import type { LinkType } from "./atom";
 
 function getQuadraticBezierPoints3D(
 	start: Vector3,
@@ -82,7 +82,16 @@ export function GenLine({ start, end, link }: { start: Vector3; end: Vector3; li
 		const t = Math.pow(clamped / maxDistance, 2); // transition plus douce
 
 		// Couleur de base selon le type
-		const base = new Color(link.type === "children" ? "darkgreen" : "blue");
+		let baseColor = "white";
+		if (link.type === "children") {
+			baseColor = "darkgreen";
+		} else if (link.type === "parent") {
+			baseColor = "#FF007F";
+		} else if (link.type === "parentM") {
+			baseColor = "blue";
+		}
+		const base = new Color(baseColor);
+
 		const white = new Color("white");
 
 		// Interpolation entre la couleur de base et blanc
@@ -91,7 +100,7 @@ export function GenLine({ start, end, link }: { start: Vector3; end: Vector3; li
 		return `#${finalColor.getHexString()}`;
 	}, [link]);
 
-	const points = useMemo(() => getQuadraticBezierPoints3D(start, end, 30), [start, end, link]);
+	const points = useMemo(() => getQuadraticBezierPoints3D(start, end, 30), [start, end]);
 
 	return <Line points={points} color={color} lineWidth={link ? 4 : 1} dashed={false} />;
 }

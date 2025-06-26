@@ -9,9 +9,10 @@ export type NodeLink = {
 	node: number;
 	children: number;
 	isChildren: boolean;
+	isMaleLink: boolean;
 	distance: number; // Optional distance property
 };
-export type LinkType = { type: "children" | "parent" | "none"; distance: number };
+export type LinkType = { type: "children" | "parentM" | "parent" | "none"; distance: number };
 
 export const currentNodeAtom = atom<INode | null>(null);
 export const currentRef = atom<Mesh | null>(null);
@@ -33,6 +34,10 @@ export const linkTypeAtom = (idCrt: number | null, idChildren: number) =>
 		if (idCrt === null) return { type: "none", distance: -1 };
 		const isLinkToSelection = nodeLinkMap.get(idCrt + ":" + idChildren);
 		if (!isLinkToSelection) return { type: "none", distance: -1 };
+
+		if (isLinkToSelection.isMaleLink) {
+			return { type: "parentM", distance: isLinkToSelection.distance };
+		}
 
 		return isLinkToSelection.isChildren
 			? { type: "children", distance: isLinkToSelection.distance }
@@ -103,18 +108,35 @@ export class NodeHelper {
 			return new Map<string, NodeLink>();
 		}
 		const genealogyTree: NodeLink[] = [];
-		const computeParent = (currentNode: INode, distance: number) => {
-			if (currentNode.parent === null) return;
-			const parent = dataMap.get(currentNode.parent)!;
-			genealogyTree.push({
-				node: parent.id,
-				children: currentNode.id,
-				isChildren: false,
-				distance: distance,
-			});
-			computeParent(parent, distance + 1);
+		const computeParent = (currentNode: INode, distance: number, maleMode: boolean) => {
+			if (maleMode) {
+				if (currentNode.male === null) return;
+				const parentM = dataMap.get(currentNode.male!)!;
+
+				genealogyTree.push({
+					node: parentM.id,
+					children: currentNode.id,
+					isChildren: false,
+					isMaleLink: true,
+					distance: distance,
+				});
+				computeParent(parentM, distance + 1, true);
+			} else {
+				if (currentNode.parent === null) return;
+				const parent = dataMap.get(currentNode.parent!)!;
+
+				genealogyTree.push({
+					node: parent.id,
+					children: currentNode.id,
+					isChildren: false,
+					isMaleLink: false,
+					distance: distance,
+				});
+				computeParent(parent, distance + 1, false);
+			}
 		};
-		computeParent(node, 1);
+		computeParent(node, 1, false);
+		computeParent(node, 1, true);
 
 		const computeChildren = (currentNode: INode, distance: number) => {
 			currentNode.children?.forEach((child) => {
@@ -123,6 +145,7 @@ export class NodeHelper {
 					children: child.id,
 					isChildren: true,
 					distance: distance,
+					isMaleLink: false,
 				});
 				computeChildren(child, distance + 1);
 			});
