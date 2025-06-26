@@ -3,10 +3,10 @@ import type { Mesh, Vector3 } from "three";
 
 const layerColors = [
 	"#FF8C94", // soft red
+	"#C7A6FF", // soft purple
 	"#FFBC80", // soft orange
 	"#9FFFB0", // soft green
 	"#91D6FF", // soft blue
-	"#C7A6FF", // soft purple
 	"#FFA6C9", // soft pink
 	"#DFFF84", // soft lime
 ];
@@ -21,20 +21,20 @@ export function Box({
 	highlighted,
 	position,
 	layer,
-	ref,
+	meshRef,
 }: {
 	position: Vector3;
 	onSelect: () => void;
 	selected: boolean;
 	highlighted?: boolean;
 	layer: number;
-	ref: React.RefObject<Mesh | null>;
+	meshRef?: React.RefObject<Mesh | null>;
 }) {
 	const color = selected ? "hotpink" : getColorForLayer(layer);
 
 	return (
 		<mesh
-			ref={ref}
+			ref={meshRef}
 			onClick={() => onSelect()}
 			scale={selected || highlighted ? 1.5 : 1}
 			position={position}

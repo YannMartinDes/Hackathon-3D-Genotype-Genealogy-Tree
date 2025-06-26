@@ -1,9 +1,9 @@
 import { useAtom, useAtomValue } from "jotai";
 import { useMemo, useRef } from "react";
 import { Box } from "./Box";
-import type { INode } from "./data";
+import { YEAR_LIST, type INode } from "./data";
 import { GenLine } from "./GenLine";
-import { amIInSelectedFamily, isSelected, linkTypeAtom, NodeHelper, type LinkType } from "./Atom";
+import { amIInSelectedFamily, isSelected, linkTypeAtom, NodeHelper, type LinkType } from "./atom";
 import { Text } from "@react-three/drei";
 import { Mesh, Vector3 } from "three";
 import _ from "lodash";
@@ -29,15 +29,20 @@ export function Node({ node }: { node: INode }) {
 		}
 	});
 
+	const layer = useMemo(() => {
+		const yearIndex = YEAR_LIST.indexOf(node.year);
+		return yearIndex + 1;
+	}, [node.year]);
+
 	return (
 		<>
 			<Box
-				ref={ref}
+				meshRef={ref}
 				position={node.coordinates}
 				onSelect={() => NodeHelper.selectedNode(node, ref.current)}
 				selected={selected}
 				highlighted={amIInFamily && !selected}
-				layer={node.depth}
+				layer={layer}
 			/>
 			{node.children.map((child, index) => (
 				<NodeLine node={node} child={child} key={index} />

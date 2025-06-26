@@ -10,7 +10,7 @@ export interface IRawNode {
 	parent: number | null;
 }
 
-export const nodesYears: Record<number, INode[]> = {};
+export const nodesYears: Record<number, IRawNode[]> = {};
 export interface INode extends IRawNode {
 	coordinates: Vector3;
 	children: INode[];
@@ -18,7 +18,8 @@ export interface INode extends IRawNode {
 
 export const NODES: IRawNode[] = DATA as unknown as IRawNode[];
 const computeCoordinates = (node: IRawNode): Vector3 => {
-	const radius = 20 * (node.depth + 1);
+	const yearIndex = YEAR_LIST.indexOf(node.year);
+	const radius = 20 * (yearIndex + 1);
 
 	const theta = Math.random() * 2 * Math.PI; // angle azimutal
 	const phi = Math.acos(2 * Math.random() - 1); // angle polaire, distribution uniforme sur la sphère
@@ -29,6 +30,20 @@ const computeCoordinates = (node: IRawNode): Vector3 => {
 
 	return new Vector3(x, y, z);
 };
+
+function computeYear() {
+	NODES.forEach((node) => {
+		if (!nodesYears[node.year]) {
+			nodesYears[node.year] = [];
+		}
+
+		nodesYears[node.year].push(node);
+	});
+	return Object.keys(nodesYears)
+		.map((year) => Number(year))
+		.sort();
+}
+export const YEAR_LIST = computeYear();
 
 export const DataWithDisplay: INode[] = NODES.map((elt) => {
 	const node = {

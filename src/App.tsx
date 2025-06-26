@@ -2,7 +2,7 @@ import { Canvas } from "react-three-fiber";
 import { Scene } from "./Scene";
 import { InfoWindow } from "./InfoWindow";
 import { useAtom, useAtomValue } from "jotai";
-import { currentNodeAtom, isFocusOnGenealogy } from "./Atom";
+import { currentNodeAtom, isFocusOnGenealogy } from "./atom";
 
 const buttonStyle = {
 	padding: "10px 20px",
