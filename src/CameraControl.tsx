@@ -35,7 +35,7 @@ export function CameraControl() {
 		const handleKeyDown = (e: KeyboardEvent) => {
 			if (e.key === "f" && selected?.ref && controls.current) {
 				setFocusPressed(true);
-				setFocusProgress(0);
+				focusProgress.current = 0;
 
 				// Save start position/target
 				startPosition.current.copy(camera.position);
