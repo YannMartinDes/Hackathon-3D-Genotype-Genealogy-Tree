@@ -13,8 +13,9 @@ export function CameraControl() {
 	const controls = useRef<any>(null);
 	const { camera } = useThree();
 	const [focusPressed, setFocusPressed] = useState(false);
-	const [focusProgress, setFocusProgress] = useState(0);
+
 	const selected = useAtomValue(currentRef);
+	const focusProgress = useRef(1);
 	const startPosition = useRef(new Vector3());
 	const startTarget = useRef(new Vector3());
 	const targetPosition = useRef(new Vector3());
@@ -68,18 +69,16 @@ export function CameraControl() {
 
 	// Smooth animation per frame
 	useFrame((_, delta) => {
-		if (focusProgress < 1) {
-			setFocusProgress((prev) => {
-				const next = Math.min(prev + delta * 2, 1); // duration control
-				const t = easeInOutCubic(next);
+		if (focusProgress.current < 1) {
+			const next = Math.min(focusProgress.current + delta * 2, 1); // duration control
+			const t = easeInOutCubic(next);
 
-				// Interpolate camera position and controls target
-				camera.position.lerpVectors(startPosition.current, targetPosition.current, t);
-				controls.current.target.lerpVectors(startTarget.current, targetTarget.current, t);
+			// Interpolate camera position and controls target
+			camera.position.lerpVectors(startPosition.current, targetPosition.current, t);
+			controls.current.target.lerpVectors(startTarget.current, targetTarget.current, t);
 
-				controls.current.update();
-				return next;
-			});
+			controls.current.update();
+			focusProgress.current = next;
 		}
 	});
 
