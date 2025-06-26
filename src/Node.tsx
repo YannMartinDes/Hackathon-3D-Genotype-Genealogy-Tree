@@ -1,5 +1,5 @@
 import { useAtom, useAtomValue } from "jotai";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { Box } from "./Box";
 import type { INode } from "./data";
 import { GenLine } from "./GenLine";
@@ -7,6 +7,7 @@ import { amIInSelectedFamily, isSelected, linkTypeAtom, NodeHelper, type LinkTyp
 import { Text } from "@react-three/drei";
 import { Vector3 } from "three";
 import _ from "lodash";
+import { useThree, useFrame } from "react-three-fiber";
 
 export function Node({ node }: { node: INode }) {
 	const [selected] = useAtom(useMemo(() => isSelected(node.id), [node.id]));
@@ -17,11 +18,19 @@ export function Node({ node }: { node: INode }) {
 		}, [node.id])
 	);
 
+	const textRef = useRef<any>(null);
+	const { camera } = useThree();
+	useFrame(() => {
+		if (textRef.current) {
+			textRef.current.lookAt(camera.position); // Optional: orient to center
+		}
+	});
+
 	return (
 		<>
 			<Box
 				position={node.coordinates}
-				onSelect={(ref) => NodeHelper.selectedNode(node)}
+				onSelect={() => NodeHelper.selectedNode(node)}
 				selected={selected}
 				highlighted={amIInFamily && !selected}
 				layer={node.depth}
@@ -33,6 +42,7 @@ export function Node({ node }: { node: INode }) {
 
 			{(selected || amIInFamily) && (
 				<Text
+					ref={textRef}
 					position={_.clone(node.coordinates).add(new Vector3(0, 1, 1))}
 					fontSize={2}
 					color="white"

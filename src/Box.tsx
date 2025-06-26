@@ -47,7 +47,7 @@ export function Box({
 			scale={selected || highlighted ? 1.5 : 1}
 			position={position}
 		>
-			<boxGeometry args={[1, 1, 1]} />
+			<sphereGeometry args={[0.5, 32, 32]} />
 			<meshStandardMaterial
 				color={color}
 				emissive={color}
@@ -56,7 +56,7 @@ export function Box({
 			{/* Glowy highlight layer */}
 			{highlighted && (
 				<mesh scale={1.3}>
-					<boxGeometry args={[1, 1, 1]} />
+					<sphereGeometry args={[0.5, 32, 32]} />
 					<meshBasicMaterial color="white" transparent opacity={0.4} />
 				</mesh>
 			)}
