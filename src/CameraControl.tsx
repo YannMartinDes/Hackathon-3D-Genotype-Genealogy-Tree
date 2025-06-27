@@ -16,6 +16,12 @@ function getAllChildren(node: INode): INode[] {
 	return [node, ...nodes];
 }
 
+function getAllPArent(node: INode): INode[] {
+	if (!node.parentNode) return [];
+	const nodes = getAllPArent(node.parentNode);
+	return [node, ...nodes];
+}
+
 export const KEY_FOCUS = "7";
 
 export function CameraControl() {
@@ -46,7 +52,6 @@ export function CameraControl() {
 			setFocusPressed(true);
 			if (nodes.length === 0) return;
 			focusProgress.current = 0;
-
 			const box = new Box3();
 			startPosition.current.copy(camera.position);
 			startTarget.current.copy(controls.current.target);
@@ -60,7 +65,7 @@ export function CameraControl() {
 			const fov = camera.fov * (Math.PI / 180);
 			const fitHeightDistance = maxDim / (2 * Math.tan(fov / 2));
 			const fitWidthDistance = fitHeightDistance / camera.aspect;
-			const distance = 1.2 * Math.max(fitHeightDistance, fitWidthDistance); // Add margin
+			const distance = 2 * Math.max(fitHeightDistance, fitWidthDistance); // Add margin
 
 			// Direction from camera to center
 			const direction = new Vector3()
@@ -95,7 +100,7 @@ export function CameraControl() {
 			} else if (e.key === "8" && controls.current) {
 				focus(DataWithDisplay);
 			} else if (e.key === "9" && selected && controls.current) {
-				focus(getAllChildren(selected));
+				focus([...getAllChildren(selected), ...getAllPArent(selected)]);
 			}
 		};
 
