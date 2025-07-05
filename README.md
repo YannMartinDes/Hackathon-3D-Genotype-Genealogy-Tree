@@ -4,6 +4,8 @@ This project visualizes the genealogy of genotypes in a 3D space using react-thr
 
 This project has been developed during a 2 day corporate hackathon at the company Doriane SAS. This is not an official project of the company, and the project is a prototype, it's not intended for production use. 
 
+This project has been developed by me and a colleague Victor C.
+
 It allows users to explore the relationships between different genotypes, their parents and children in an interactive 3D environment.
 
 The dataset (~6000 genotypes) used in this project is a sample dataset of genotypes, which can be replaced with any other dataset in the same format. It comes from example dataset of the company Doriane SAS.   
