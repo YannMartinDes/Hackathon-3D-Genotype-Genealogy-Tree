@@ -1,9 +1,9 @@
 import { useAtomValue } from "jotai";
-import { filteredDataAtom, showYear } from "./atom";
+import { filteredDataAtom, showYear } from "./jotai/atom";
 import { CameraControl } from "./CameraControl";
 import { YEAR_LIST } from "./data";
 import { Node } from "./Node";
-import { YearSphere } from "./YearSphere";
+import { YearSphere } from "./components/YearSphere";
 
 export function Scene() {
 	const yearDisplay = useAtomValue(showYear);

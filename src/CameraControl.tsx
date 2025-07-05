@@ -4,8 +4,8 @@ import { useAtomValue } from "jotai";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useFrame, useThree } from "react-three-fiber";
 import { Box3, MOUSE, PerspectiveCamera, Vector3 } from "three";
-import { currentNodeAtom } from "./atom";
-import { DataWithDisplay, type INode } from "./data";
+import { currentNodeAtom } from "./jotai/atom";
+import { ENHANCED_DATA, type INode } from "./data";
 
 function easeInOutCubic(t: number) {
 	return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -75,6 +75,7 @@ export function CameraControl() {
 			targetTarget.current.copy(center);
 			targetPosition.current.copy(center.clone().add(direction.multiplyScalar(distance)));
 		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[focusProgress.current, targetTarget.current, targetPosition.current]
 	);
 
@@ -98,7 +99,7 @@ export function CameraControl() {
 					target.clone().add(direction.multiplyScalar(-distance))
 				);
 			} else if (e.key === "8" && controls.current) {
-				focus(DataWithDisplay);
+				focus(ENHANCED_DATA);
 			} else if (e.key === "9" && selected && controls.current) {
 				focus([...getAllChildren(selected), ...getAllPArent(selected)]);
 			}

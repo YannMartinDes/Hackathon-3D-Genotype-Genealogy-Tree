@@ -5,10 +5,11 @@ import _ from "lodash";
 import { useMemo, useRef } from "react";
 import { useFrame, useThree } from "react-three-fiber";
 import { Vector3 } from "three";
-import { amIInSelectedFamily, isSelected, linkTypeAtom, NodeHelper, type LinkType } from "./atom";
-import { Box } from "./Box";
-import { dataMap, YEAR_LIST, type INode } from "./data";
-import { GenLine } from "./GenLine";
+import { amIInSelectedFamily, isSelected, linkTypeAtom, type LinkType } from "./jotai/atom";
+import { NodeBody } from "./components/NodeBody";
+import { NODE_DATA_MAP, YEAR_LIST, type INode } from "./data";
+import { GenLine } from "./components/GenLine";
+import { NodeHelper } from "./jotai/helper";
 
 export function Node({ node }: { node: INode }) {
 	const [selected] = useAtom(useMemo(() => isSelected(node.id), [node.id]));
@@ -34,12 +35,12 @@ export function Node({ node }: { node: INode }) {
 
 	const parentM = useMemo(() => {
 		if (node.male === null) return null;
-		return dataMap.get(node.male) ?? null;
+		return NODE_DATA_MAP.get(node.male) ?? null;
 	}, [node.male]);
 
 	return (
 		<>
-			<Box
+			<NodeBody
 				position={node.position}
 				onSelect={() => NodeHelper.selectedNode(node)}
 				selected={selected}

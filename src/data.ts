@@ -1,5 +1,5 @@
 import { Vector3 } from "three";
-import DATA from "./data/formated.json";
+import DATA from "./data/FORMATTED.json";
 
 export interface IRawNode {
 	id: number;
@@ -15,7 +15,6 @@ export interface IRawNode {
 	trialName: string;
 }
 
-export const nodesYears: Record<number, INode[]> = {};
 export interface INode extends IRawNode {
 	position: Vector3;
 	children: INode[];
@@ -24,70 +23,95 @@ export interface INode extends IRawNode {
 	parentNode?: INode;
 }
 
-export const NODES: IRawNode[] = DATA as unknown as IRawNode[];
+export class DataHelper {
+	static computeRandomCoordinates = (node: INode): Vector3 => {
+		const yearIndex = YEAR_LIST.indexOf(node.year);
+		const radius = 20 * (yearIndex + 1);
 
-const computeCoordinatesV1 = (node: INode): Vector3 => {
-	const yearIndex = YEAR_LIST.indexOf(node.year);
-	const radius = 20 * (yearIndex + 1);
+		const theta = Math.random() * 2 * Math.PI; // angle azimutal
+		const phi = Math.acos(2 * Math.random() - 1); // angle polaire, distribution uniforme sur la sphère
 
-	const theta = Math.random() * 2 * Math.PI; // angle azimutal
-	const phi = Math.acos(2 * Math.random() - 1); // angle polaire, distribution uniforme sur la sphère
+		const x = radius * Math.sin(phi) * Math.cos(theta);
+		const y = radius * Math.cos(phi);
+		const z = radius * Math.sin(phi) * Math.sin(theta);
 
-	const x = radius * Math.sin(phi) * Math.cos(theta);
-	const y = radius * Math.cos(phi);
-	const z = radius * Math.sin(phi) * Math.sin(theta);
+		return new Vector3(x, y, z);
+	};
 
-	return new Vector3(x, y, z);
-};
-
-function randomDirectionWithinCone(baseDir: Vector3, maxAngle: number): Vector3 {
-	const axis = new Vector3().randomDirection(); // random axis
-	const angle = Math.random() * maxAngle;
-	return baseDir.clone().applyAxisAngle(axis, angle).normalize();
-}
-
-function placeNode3D(baseDir: Vector3, radius: number, maxAngle: number): Vector3 {
-	const dir = randomDirectionWithinCone(baseDir, maxAngle);
-	return dir.multiplyScalar(radius);
-}
-
-function computeCoordinatesV2(node: INode) {
-	const parent = node.parentNode;
-	if (
-		!parent ||
-		(parent.position.x === 0 && parent.position.y === 0 && parent.position.z === 0)
-	) {
-		node.position = computeCoordinatesV1(node);
-		return;
+	static randomDirectionWithinCone(baseDir: Vector3, maxAngle: number): Vector3 {
+		const axis = new Vector3().randomDirection(); // random axis
+		const angle = Math.random() * maxAngle;
+		return baseDir.clone().applyAxisAngle(axis, angle).normalize();
 	}
-	const yearIndex = YEAR_LIST.indexOf(node.year);
-	const radius = 20 * (yearIndex + 1);
+	static placeNode3D(baseDir: Vector3, radius: number, maxAngle: number): Vector3 {
+		const dir = DataHelper.randomDirectionWithinCone(baseDir, maxAngle);
+		return dir.multiplyScalar(radius);
+	}
 
-	const baseDir = parent.position.clone().normalize();
+	static computeCoordinates(node: INode) {
+		const parent = node.parentNode;
 
-	const maxAngle = Math.PI / 3; // 30 degrees
-	node.position = placeNode3D(baseDir, radius, maxAngle);
+		if (
+			!parent ||
+			(parent.position.x === 0 && parent.position.y === 0 && parent.position.z === 0)
+		) {
+			node.position = DataHelper.computeRandomCoordinates(node);
+			return;
+		}
+
+		const yearIndex = YEAR_LIST.indexOf(node.year);
+		const radius = 20 * (yearIndex + 1);
+
+		const baseDir = parent.position.clone().normalize();
+
+		const maxAngle = Math.PI / 3; // 30 degrees
+		node.position = DataHelper.placeNode3D(baseDir, radius, maxAngle);
+	}
+
+	static computeNodeYearLayer() {
+		YEAR_LIST.map((year: number) => {
+			NODES_BY_YEARS[year]
+				.sort((a, b) => {
+					return (a.parentNode?.year ?? 0) - (b.parentNode?.year ?? 0);
+				})
+				.map((node) => {
+					DataHelper.computeCoordinates(node);
+				});
+		});
+	}
+
+	static computeYearList() {
+		return Object.keys(NODES_BY_YEARS)
+			.map((year) => Number(year))
+			.sort();
+	}
+
+	static computeNodeChildren() {
+		ENHANCED_DATA.forEach((node) => {
+			if (node.parent) {
+				const pNode = NODE_DATA_MAP.get(node.parent);
+				if (pNode) {
+					if (!pNode.children.some((child) => child.id === node.id)) {
+						pNode.children.push(node);
+					}
+					pNode.childrenF.push(node);
+					node.parentNode = pNode;
+				}
+			}
+			if (node.male) {
+				const mNode = NODE_DATA_MAP.get(node.male);
+				if (mNode) {
+					if (!mNode.children.some((child) => child.id === node.id)) {
+						mNode.children.push(node);
+					}
+					mNode?.childrenM.push(node);
+				}
+			}
+		});
+	}
 }
-
-function asd() {
-	YEAR_LIST.map((year: number) => {
-		nodesYears[year]
-			.sort((a, b) => {
-				return (a.parentNode?.year ?? 0) - (b.parentNode?.year ?? 0);
-			})
-			.map((node) => {
-				computeCoordinatesV2(node);
-			});
-	});
-}
-
-function computeYear() {
-	return Object.keys(nodesYears)
-		.map((year) => Number(year))
-		.sort();
-}
-
-export const DataWithDisplay: INode[] = NODES.map((elt) => {
+export const NODES_BY_YEARS: Record<number, INode[]> = {};
+export const ENHANCED_DATA: INode[] = (DATA as unknown as IRawNode[]).map((elt) => {
 	const node = {
 		...elt,
 		position: new Vector3(),
@@ -96,40 +120,18 @@ export const DataWithDisplay: INode[] = NODES.map((elt) => {
 		childrenM: [],
 	};
 
-	if (!nodesYears[elt.year]) {
-		nodesYears[elt.year] = [];
+	if (!NODES_BY_YEARS[elt.year]) {
+		NODES_BY_YEARS[elt.year] = [];
 	}
 
-	nodesYears[elt.year].push(node);
+	NODES_BY_YEARS[elt.year].push(node);
 
 	return node;
 });
 
-export const dataMap = new Map<number, INode>(DataWithDisplay.map((node) => [node.id, node]));
-function computeChildren() {
-	DataWithDisplay.forEach((node) => {
-		if (node.parent) {
-			const pNode = dataMap.get(node.parent);
-			if (pNode) {
-				if (!pNode.children.some((child) => child.id === node.id)) {
-					pNode.children.push(node);
-				}
-				pNode.childrenF.push(node);
-				node.parentNode = pNode;
-			}
-		}
-		if (node.male) {
-			const mNode = dataMap.get(node.male);
-			if (mNode) {
-				if (!mNode.children.some((child) => child.id === node.id)) {
-					mNode.children.push(node);
-				}
-				mNode?.childrenM.push(node);
-			}
-		}
-	});
-}
-computeChildren();
-export const YEAR_LIST = computeYear();
+export const NODE_DATA_MAP = new Map<number, INode>(ENHANCED_DATA.map((node) => [node.id, node]));
 
-asd();
+DataHelper.computeNodeChildren();
+export const YEAR_LIST = DataHelper.computeYearList();
+
+DataHelper.computeNodeYearLayer();
