@@ -1,69 +1,20 @@
-# React + TypeScript + Vite
+# 3D Genotype Genealogy Tree
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project visualizes the genealogy of genotypes in a 3D space using react-three (three.js).   
 
-Currently, two official plugins are available:
+This project has been developed during a corporate hackathon at the company Doriane SAS.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+It allows users to explore the relationships between different genotypes, their parents and children in an interactive 3D environment.
 
-## Expanding the ESLint configuration
+The dataset (~6000 genotypes) used in this project is a sample dataset of genotypes, which can be replaced with any other dataset in the same format. It comes from example dataset of the company Doriane SAS.   
+*NOTE: The dataset is complex so the relation in the genealogy tree is not always clear.*
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## How to run the project
+To install the project, you need to have Node.js and Yarn installed on your machine.  
+ *Node version used v22.17.0*
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+To install the dependencies, run the following command: `yarn`
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+To run the project, use the following command: `yarn dev`
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+To run the project in production mode, use the following command: `npm run build` then `npx serve -s .\dist\`
